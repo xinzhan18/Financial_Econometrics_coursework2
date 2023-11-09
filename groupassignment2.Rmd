@@ -1,0 +1,155 @@
+---
+title: |
+  | Financial Econometric in R/Python 
+  | Assignment One
+author: |
+  | Group 2
+  | Hessa Alabbas 02513615
+  | Xin Zhan 02299544
+  | Alex Rached 01894052
+  | Yan Cai 02381303
+  | Kexin Liu 02362049
+  |
+  | The Business School, Imperial College London
+  | 
+date: "09-11-2023"
+output:
+  pdf_document: 
+    keep_tex: true
+    latex_engine: xelatex
+
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{caption}
+---
+
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagebreak
+
+# Introduction
+
+## Load Packages 
+```{r loadLibs, message=FALSE, warning=FALSE}
+library(lubridate)
+library(knitr)
+library(dplyr)
+library(sandwich)
+library(MASS)
+library(lmtest)
+library(quantmod)
+library(readxl)
+library(moments)
+library(sandwich)
+library(estimatr)
+
+```
+
+
+## Load Data
+```{r}
+data <-  read_excel('employment_08_09.xlsx')
+head(data)
+```
+
+## Question1
+What fraction of workers in the sample were employed in April 2009? Use your answer to compute a 95% confidence interval for the probability that a worker was employed in April 2009, conditional on being employed in April 2008. 
+
+```{r}
+
+fraction_employed <- sum(data$employed) / nrow(data)
+se <- sqrt((fraction_employed * (1 - fraction_employed)) / nrow(data))
+
+
+z_score <- qnorm(0.975)  
+
+ci_lower <- fraction_employed - z_score * se
+ci_upper <- fraction_employed + z_score * se
+
+cat(ci_lower,ci_upper)
+
+
+```
+#Question2
+
+Regress Employed on Age and Age**2 , using a linear probability model.
+
+```{r}
+
+binary_lm <- lm(employed ~ age + I(age ^ 2), data = data)
+summary(binary_lm)
+coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
+```
+
+## i
+Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
+
+
+yes
+
+
+## ii
+Is there evidence of a nonlinear effect of age on probability of being employed? 
+
+
+
+## iii
+Compute the predicted probability of employment for a 20-year-old worker, a 40year-old worker, and a 60-year-old worker. 
+
+
+#Question3
+Repeat (b) using a probit regression.
+
+```{r}
+binary_logit <- glm(employed ~ age + I(age ^ 2), family = binomial(link = "logit"), data)
+summary(binary_logit)
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
+
+```
+
+#Question4
+Repeat (b) using a logit regression.
+```{r}
+binary_probit <- glm(employed ~ age + I(age ^ 2), family = binomial(link = "probit"), data)
+summary(binary_probit)
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")                     
+                     
+                     
+```
+
+
+
+#Question5
+Are there important differences in your answers to (b)-(d)? Explain.
+
+#Question6
+
+The data set includes variables measuring the workers’ educational attainment, sex, race, marital status, region of the country, and weekly earnings in April 2008.
+
+
+## (i)
+By adding those covariates to the linear probability model regression of point (b), investigate whether the conclusions on the effect of Age on employment from (b) are affected by omitted variable bias. 
+
+
+## (ii)
+Use the regression results to discuss the characteristics of workers who were hurt the most by the 2008 financial crisis.
+
+
+#Question7
+(g) Optional: Use the models in (b)-(d) to assess the in-sample accuracy of the classification.
+What is the proportion of correctly assigned classes?
+
+#Question (h) 
+
+Optional: Repeat point (g) using one or more (at your discretion) of the following 
+classification algorithms: Naïve Bayes Classifier, Linear Discriminant Analysis, Quadratic 
+Discriminant Analysis, Decision trees, Random forests, K-Nearest Neighbours.
+
+
+
+
+
