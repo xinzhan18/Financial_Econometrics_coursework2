@@ -1,0 +1,123 @@
+---
+title: |
+  | Financial Econometric in R/Python 
+  | Assignment One
+author: |
+  | Group 2
+  | Hessa Alabbas 02513615
+  | Xin Zhan 02299544
+  | Alex Rached 01894052
+  | Yan Cai 02381303
+  | Kexin Liu 02362049
+  |
+  | The Business School, Imperial College London
+  | 
+date: "23-10-2023"
+output:
+  pdf_document: 
+    keep_tex: true
+    latex_engine: xelatex
+
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{caption}
+---
+
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagebreak
+
+# Introduction
+
+## Load Packages 
+```{r loadLibs, message=FALSE, warning=FALSE}
+library(lubridate)
+library(knitr)
+library(dplyr)
+library(sandwich)
+library(MASS)
+library(lmtest)
+library(quantmod)
+library(readxl)
+library(moments)
+library(sandwich)
+library(estimatr)
+
+```
+
+```{r}
+library(margins) # For the marginal effects of Logit and Probit
+library(randomForest)
+library(e1071) # For Naive Bayesian Classifier
+library(MASS) # Logit, Probit, LDA, QDA
+library(class) # for k-NN
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(tree)
+```
+
+## Load Data
+```{r message=FALSE,warning=FALSE}
+emdata <- read_excel('employment_08_09.xlsx')
+
+head(emdata)
+```
+
+# Question A
+
+```{R}
+num_employed <- sum(emdata$employed)
+frac = num_employed / nrow(emdata)
+frac
+```
+```{R}
+se <- sqrt(frac * (1 - frac) / nrow(emdata))
+
+z_score <- qnorm(0.975)
+
+conf_interval_lower <- frac - z_score * se
+conf_interval_upper <- frac + z_score * se
+
+conf_interval_lower
+conf_interval_upper
+```
+
+# Question B
+
+```{R}
+emdata$age_squared <- emdata$age^2
+
+binary_lpm <- lm(employed ~ age + age_squared, emdata)
+summary(binary_lpm)
+coeftest(binary_lpm, vcov = vcovHC(binary_lpm), type = "HC1")
+```
+```{R}
+new_data <- data.frame(age = c(20, 40, 60), age_squared = c(20^2, 40^2, 60^2))
+
+predicted_probs <- predict(binary_lpm, newdata = new_data, type = "response")
+
+predicted_probs
+```
+
+
+
+```{R}
+binary_logit <- glm(employed ~ age + age_squared, family = binomial(link = "logit"), emdata)
+binary_probit <- glm(employed ~ age + age_squared, family = binomial(link = "probit"), emdata)
+
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")
+```
+
+
+```
+
+
+
+
+
