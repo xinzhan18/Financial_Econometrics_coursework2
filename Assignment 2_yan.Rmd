@@ -46,10 +46,9 @@ head(employmentdata)
 
 ```{r}
 worker_employed_mean <-mean(employmentdata$employed)
-print(worker_employed_cd)
 worker_employed_sd <-sd(employmentdata$employed)
 
-n = length(workers_data$employed)
+n = length(employmentdata$employed)
 # Calculate the margin of error using the t-distribution (for a 95% confidence interval)
 margin_of_error <- qt(0.975, df = n - 1) * (worker_employed_sd / sqrt(n))
 
