@@ -1,0 +1,37 @@
+```{r}
+library(dplyr)
+library(sandwich)
+library(lmtest)
+library(quantmod)
+library(dplyr)
+library(readxl)
+library(moments)
+```
+
+```{r}
+data <- read_xlsx("employment_08_09.xlsx")
+```
+
+Question a)
+
+```{r}
+employed_fraction <- mean(data$employed)
+
+std_error <- sqrt((employed_fraction * (1 - employed_fraction)) / nrow(data))
+
+z_score <- qnorm(0.975)
+
+conf_interval <- c(employed_fraction - z_score * std_error, employed_fraction + z_score * std_error)
+
+print(paste("Fraction employed in April 2009:", employed_fraction))
+print(paste("95% confidence interval for the probability of being employed in April 2009:", conf_interval))
+
+```
+
+Question b)
+```{r}
+lpm_model <- lm(employed ~ age + I(age^2), data = data)
+
+summary(lpm_model)
+
+```
