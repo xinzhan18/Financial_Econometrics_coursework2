@@ -1,0 +1,123 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+---
+title: |
+  | Financial Econometric in R/Python 
+  | Assignment One
+author: |
+  | Group 2
+  | Hessa Alabbas 02513615
+  | Xin Zhan 02299544
+  | Alex Rached 01894052
+  | Yan Cai 02381303
+  | Kexin Liu 02362049
+  |
+  | The Business School, Imperial College London
+  | 
+date: "23-10-2023"
+output:
+  pdf_document: 
+    keep_tex: true
+    latex_engine: xelatex
+  html_document: default
+header-includes:
+  - \\usepackage[utf8]{inputenc}
+  - \\usepackage[T1]{fontenc}
+
+---
+
+\newpage
+\tableofcontents
+\listoftables
+\newpage
+
+\pagebreak
+
+# Introduction
+
+## Load Packages 
+```{r loadLibs, message=FALSE, warning=FALSE}
+library(knitr)
+library(dplyr)
+library(readxl)
+
+```
+
+
+## Load Data
+```{r}
+employment_data <- read_excel("employment_08_09.xlsx")
+
+```
+
+# Question A
+
+## What fraction of workers in the sample were employed in April 2009? Use your answer to compute a 95% confidence interval for the probability that a worker was employed in April 2009, conditional on being employed in April 2008. 
+
+```{r}
+head(employment_data)
+
+#sample size
+n <- nrow(employment_data)
+
+#employed fraction
+p <- sum(employment_data$employed == 1) / n
+cat("Fraction of workers employed in April 2009:", employed_fraction, "\n")
+
+#margin of error
+margin <- qnorm(0.975)*sqrt(p*(1-p)/n)
+
+#lower and upper intervals
+
+lowerinterval <- p - margin
+lowerinterval
+
+upperinterval <- p + margin
+upperinterval
+
+```
+
+
+# Question B
+
+Regress Employed on Age and Age2, using a linear probability model.
+
+```{r}
+
+age <- employment_data$age
+age2 <- employment_data$age^2
+
+model <- lm(employment_data$employed ~ age + age2)
+
+# Display model summary
+summary(model)
+
+```
+
+
+## i) Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
+
+The positive coefficient for the 'Age' variable suggests that, on average, the probability of being employed increases with age. The coefficient is statistically significant with a p-value < 0.001, so there is a statistically significant relationship between age and employment in April 2009. Although it is statistically significant, the overall fit of the model (Multiple R-squared and Adjusted R-squared) indicates that age explains a very small proportion of the variability in employment status. 
+
+## ii) Is there evidence of a nonlinear effect of age on probability of being employed?
+
+Yes, there is evidence of a nonlinear effect of age on the probability of being employed based on the regression results. The negative coefficient for the squared term 'Age^2' is statistically significant (p-value < 0.001). This suggests that as age increases, the positive effect of age on the probability of being employed diminishes, indicating a curvature or nonlinear pattern in the relationship.
+
+## iii) Compute the predicted probability of employment for a 20-year-old worker, a 40-year-old worker, and a 60-year-old worker.
+
+```{r}
+
+new_data <- data.frame(Age = c(20, 40, 60))
+
+predicted_probs <- predict(model, new_data, type = "response")
+
+predicted_probs[1]
+predicted_probs[2]
+predicted_probs[3]
+
+
+```
