@@ -1,0 +1,255 @@
+---
+title: "group_assignment_2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+# Load required libraries
+install.packages("rpart.plot")
+install.packages(c("e1071", "MASS", "class"))
+install.packages("tree")
+install.packages("randomForest")
+install.packages("margins")
+```
+
+## Load Packages 
+```{r loadLibs, message=FALSE, warning=FALSE}
+library(lubridate)
+library(knitr)
+library(dplyr)
+library(sandwich)
+library(MASS)
+library(lmtest)
+library(quantmod)
+library(readxl)
+library(moments)
+library(sandwich)
+library(estimatr)
+library(margins) # For the marginal effects of Logit and Probit
+library(randomForest)
+library(e1071) # For Naive Bayesian Classifier
+library(MASS) # Logit, Probit, LDA, QDA
+library(class) # for k-NN
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(tree)
+
+
+```
+
+```{r}
+employmentdata <- read_excel('employment_08_09.xlsx')
+head(employmentdata)
+```
+## (a)
+
+```{r}
+worker_employed_mean <-mean(employmentdata$employed)
+print(worker_employed_cd)
+worker_employed_sd <-sd(employmentdata$employed)
+
+n = length(workers_data$employed)
+# Calculate the margin of error using the t-distribution (for a 95% confidence interval)
+margin_of_error <- qt(0.975, df = n - 1) * (worker_employed_sd / sqrt(n))
+
+# Calculate the confidence interval
+lower_bound <- worker_employed_mean - margin_of_error
+higher_bound <- worker_employed_mean + margin_of_error
+confidence_interval <- c(worker_employed_mean - margin_of_error, worker_employed_mean + margin_of_error)
+
+# Print the confidence interval
+print(confidence_interval)
+
+```
+
+```{r}
+binary_lpm <- lm(employed~ age + I(age^2), employmentdata)
+summary(binary_lpm)
+coeftest(binary_lpm, vcov = vcovHC(binary_lpm), type = "HC1")
+# Create a new data frame with the values for age and age squared
+
+for (i in c(20, 40, 60)){
+  new_data <- data.frame(age = i, age_squared = I(i^2))
+
+# Use the predict() function to obtain predictions
+predictions <- predict(binary_lpm, newdata = new_data)
+
+# 'predictions' now contains the predicted values based on the linear model for age = 40
+print(predictions)
+}
+
+
+```
+
+## (c)
+```{r}
+# 4. Run logit and probit regressions
+binary_logit <- glm(employed ~ age + I(age^2), family = binomial(link = "logit"), data = employmentdata)
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
+```
+
+## (d)
+
+```{r}
+binary_probit <- glm(employed ~ age + I(age^2), family = binomial(link = "probit"), data = employmentdata)
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")
+```
+
+## (e)
+```{r}
+names(employmentdata)
+```
+
+```{r}
+binary_lpm_modified <- lm(employed~ age + I(age^2)+race+earnwke+married+union+ne_states+
+                        so_states+ce_states+we_states+government+private+self+educ_lths+
+                          educ_hs+educ_somecol+educ_aa+educ_bac+educ_adv+female, 
+                        employmentdata,na.action = "na.omit")
+
+coeftest(binary_lpm_modified, vcov = vcovHC(binary_lpm_modified), type = "HC1")
+```
+```{r}
+# LPM predictions
+LPM_predictions_raw <- predict(binary_lpm, newdata = employmentdata, type = "response")
+LPM_predictions<- ifelse(lower_bound < LPM_predictions_raw & LPM_predictions_raw< higher_bound, 1, 0)
+
+# Logit predictions
+logit_predictions_raw <- predict(binary_logit, newdata = employmentdata, type = "response")
+logit_predictions<- ifelse(lower_bound<logit_predictions_raw & logit_predictions_raw< higher_bound, 1, 0)
+
+# Probit predictions
+probit_predictions_raw <- predict(binary_probit, newdata = employmentdata, type = "response")
+probit_predictions<- ifelse(lower_bound<probit_predictions_raw & probit_predictions_raw< higher_bound, 1, 0)
+```
+
+```{r}
+LPM_accuracy    <- sum(LPM_predictions== employmentdata$employed) / nrow(employmentdata)
+logit_accuracy  <- sum( logit_predictions== employmentdata$employed) / nrow(employmentdata)
+probit_accuracy <- sum( probit_predictions== employmentdata$employed) / nrow(employmentdata)
+```
+
+```{r}
+all_accuracies <- c(logit_accuracy, probit_accuracy, LPM_accuracy)
+names(all_accuracies) <- c("Logit", "Probit", "LPM")
+print(all_accuracies)
+```
+
+```{r}
+confusion_matrix_LPM    <- table(Actual = employmentdata$employed, Predicted = LPM_predictions)
+confusion_matrix_logit  <- table(Actual = employmentdata$employed, Predicted = logit_predictions)
+confusion_matrix_probit <- table(Actual = employmentdata$employed, Predicted = probit_predictions)
+```
+
+```{r}
+# Print the confusion matrix
+print(confusion_matrix_LPM)
+print(confusion_matrix_logit)
+print(confusion_matrix_probit)
+```
+
+```{r}
+normalize_cm <- function(cm, type='precision') {
+  if (type == 'precision') {
+    col_sum <- colSums(cm)
+    col_sum[col_sum == 0] <- 1
+    precision_matrix <- sweep(cm, 2, col_sum, FUN="/")
+    return(precision_matrix)
+  } else if (type == 'recall') {
+    row_sum <- rowSums(cm)
+    row_sum[row_sum == 0] <- 1
+    recall_matrix <- sweep(cm, 1, row_sum, FUN="/")
+    return(recall_matrix)
+  } else {
+    stop("Type must be either 'precision' or 'recall'")
+  }
+}
+```
+
+```{r}
+confusion_matrix_LPM_normalized <- normalize_cm(confusion_matrix_LPM)
+confusion_matrix_logit_normalized <- normalize_cm(confusion_matrix_logit)
+confusion_matrix_probit_normalized <- normalize_cm(confusion_matrix_probit)
+```
+
+```{r}
+print(confusion_matrix_LPM_normalized)
+print(confusion_matrix_logit_normalized)
+print(confusion_matrix_probit_normalized)
+```
+
+```{r}
+confusion_matrix_LPM_normalized <- normalize_cm(confusion_matrix_LPM,'recall')
+confusion_matrix_logit_normalized <- normalize_cm(confusion_matrix_logit,'recall')
+confusion_matrix_probit_normalized <- normalize_cm(confusion_matrix_probit,'recall')
+```
+
+```{r}
+print(confusion_matrix_LPM_normalized)
+print(confusion_matrix_logit_normalized)
+print(confusion_matrix_probit_normalized)
+```
+```{r}
+employmentdata<-employmentdata%>%
+  mutate(age_2 = age**2)
+# 4.a Use decision trees and compare their accuracy
+tree_model <- tree(as.factor(employed)~ age + I(age^2), data = employmentdata)
+plot(tree_model)
+text(tree_model,pretty=1)
+
+## Alternative using rpart library (nicer plots):
+## tree_model <- rpart(as.factor(Good) ~ Volume+ Turnover+ MarketCap + P2E+ B2M, data = reg_data)
+## summary(tree_model)
+## prp(tree_model, type = 2, extra = 1)
+
+
+# 4.b Use Random forests and compare their accuracy
+set.seed(123) # Setting a seed for reproducibility
+
+rf_model <- randomForest(as.factor(employed)~ age + age_2, data = employmentdata, num.trees= 100) 
+
+# 4.c Fit Naive Bayes Classifier
+nb_model <- naiveBayes(as.factor(employed)~ age + age_2, data = employmentdata)
+
+## Alternative using naivebayes library:
+
+# nb_model <- naive_bayes(as.factor(Good) ~ Volume+ Turnover+ MarketCap + P2E+ B2M, data = reg_data)
+# nb_predictions <-predict(nb_model, newdata = reg_data, type = "class")
+# nb_accuracy    <- sum(nb_predictions == reg_data$Good) / nrow(reg_data)
+
+
+# 4.d Fit LDA Classifier
+lda_model <- lda(as.factor(employed)~ age + age_2, data = employmentdata)
+
+# 4.e Fit QDA Classifier
+qda_model <- qda(as.factor(employed)~ age + age_2, data = employmentdata)
+
+
+# 4.f Fit kNN Classifier
+# First scale the data since kNN is sensitive to the scale of the data
+scaled_data <- scale(employmentdata[, c("age", "age_2")])
+# Define the number of neighbors
+k <- 7
+knn_predictions <- knn(train = scaled_data, test = scaled_data, cl = as.factor(employmentdata$employed), k = k)
+
+
+```
+
+```{r}
+# Decision trees predictions
+tree_predictions <- predict(tree_model, newdata = employmentdata, type = "class")
+
+# Random forest predictions
+
+rf_predictions <- predict(rf_model, data = employmentdata)
+
+# Naive Bayes predictions
+nb_predictions <- predict(nb_model, newdata = employmentdata, type = "class")
+
+# LDA predictions
+lda_predictions <- predict(lda_model, newdata = employmentdata)$class
+
+# QDA predictions
+qda_predictions <- predict(qda_model, newdata = employmentdata)$class
+```
+
