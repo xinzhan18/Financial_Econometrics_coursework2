@@ -65,6 +65,8 @@ library(tree)
 ```{r}
 data <-  read_excel('employment_08_09.xlsx')
 head(data)
+
+
 ```
 
 ## Question1
@@ -81,10 +83,14 @@ z_score <- qnorm(0.975)
 ci_lower <- fraction_employed - z_score * se
 ci_upper <- fraction_employed + z_score * se
 
+fraction_employed
 cat(ci_lower,ci_upper)
 
 
 ```
+The fraction of workers in the sample is  0.8754619. The interpretation is that, based on the sample data and statistical analysis, we are 95% confident that the true probability of a worker being employed in April 2009, given they were employed in April 2008, lies between 0.8666648 and 0.884259.
+
+
 #Question2
 
 Regress Employed on Age and Age**2 , using a linear probability model.
@@ -100,12 +106,12 @@ coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
 Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
 
 
-yes
-
+The positive coefficient for the 'Age' variable suggests that, on average, the probability of being employed increases with age. The coefficient is statistically significant with a p-value < 0.001, so there is a statistically significant relationship between age and employment in April 2009. Although it is statistically significant, the overall fit of the model (Multiple R-squared and Adjusted R-squared) indicates that age explains a very small proportion of the variability in employment status. In this case, only about 1.966% of the variability in employment status is explained by age and its squared term. The low p-value (< 2.2e-16) indicates that at least one of the predictors (age or age^2) is related to the dependent variable.
 
 ## ii
 Is there evidence of a nonlinear effect of age on probability of being employed? 
 
+Yes, there is evidence of a nonlinear effect of age on the probability of being employed based on the regression results. The negative coefficient for the squared term 'Age^2' is also statistically significant (p-value < 0.001). This suggests that as age increases, the positive effect of age on the probability of being employed diminishes, indicating a curvature or nonlinear pattern in the relationship.
 
 
 ## iii
@@ -117,48 +123,94 @@ predicted_probabilities <- predict(binary_lm, newdata = data.frame(age = c(20,40
 print(predicted_probabilities)
 
 ```
+The predicted probability of employment for a 20-year-old worker is approximately 74.23%.
+The predicted probability of employment for a 40-year-old worker is approximately 91.58%.
+The predicted probability of employment for a 60-year-old worker is approximately 82.79%.
 
-#Question3
+
+#Question C
 Repeat (b) using a probit regression.
 
 ```{r}
-binary_logit <- glm(employed ~ age + I(age ^ 2), family = binomial(link = "logit"), data)
-summary(binary_logit)
-coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
-
-```
-
-#Question4
-Repeat (b) using a logit regression.
-```{r}
 binary_probit <- glm(employed ~ age + I(age ^ 2), family = binomial(link = "probit"), data)
 summary(binary_probit)
-coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")                     
-                     
-                     
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")
+
 ```
 
+The positive coefficient for 'age' (0.1217230) indicates that, on average, the log-odds of being employed increase with age. The negative coefficient for the squared term 'I(age^2)' (-0.0014125) suggests a nonlinear effect. As 'age' increases, the positive effect on the log-odds of being employed diminishes. The z-tests show that all coefficients are statistically significant at the 0.05 significance level, indicating that age and its squared term are significantly related to the log-odds of being employed.
 
 
-#Question5
+## i) Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
+
+Yes, based on the results of the probit regression model, age appears to be a statistically significant determinant of employment in April 2009. The positive coefficient for the 'age' variable suggests that, on average, the log-odds of being employed increase with age. This coefficient is statistically significant with a very low p-value (< 0.001), indicating strong evidence that the effect of age on employment is different from zero.
+
+The low p-values indicate that both 'age' and 'age^2' are highly unlikely to have coefficients equal to zero, suggesting that both linear and nonlinear components of age are important in determining employment status.
+
+## ii) Is there evidence of a nonlinear effect of age on probability of being employed?
+
+The negative coefficient for the squared term 'I(age^2)' (-0.0014) suggests a nonlinear effect. Specifically, as 'age' increases, the positive effect on the log-odds of being employed diminishes. This coefficient is also statistically significant with a very low p-value (< 0.001).
+
+## iii) Compute the predicted probability of employment for a 20-year-old worker, a 40-year-old worker, and a 60-year-old worker.
+
+```{r}
+
+predicted_probabilities_probit <- predict(binary_probit, newdata = data.frame(age = c(20,40,60)), type = "response")
+
+print(predicted_probabilities_probit)
+
+
+```
+The predicted probability of employment for a 20-year-old worker is approximately 72.96%.
+The predicted probability of employment for a 40-year-old worker is approximately 91.17%.
+The predicted probability of employment for a 60-year-old worker is approximately 83.16%.
+
+
+
+#Question D
+Repeat (b) using a logit regression.
+```{r}
+binary_logit <- glm(employed ~ age + I(age ^ 2), family = binomial(link = "logit"), data)
+summary(binary_logit)
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")                     
+        
+```
+
+## i) Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
+
+Yes, age was a statistically significant determinant of employment in April 2009, as evidenced by the low p-values for both the 'Age' and 'I(age^2)' coefficients. The positive coefficient for 'Age' indicates a positive linear relationship. These findings highlight the importance of considering age as a factor influencing employment outcomes during the specified period. The residual deviance is 3972.9 on 5409 degrees of freedom, indicating a reasonable fit of the model to the data.
+
+## ii) Is there evidence of a nonlinear effect of age on probability of being employed?
+Yes, there is evidence of a nonlinear effect of age on the probability of being employed, as indicated by the coefficient for the quadratic term 'I(age^2)' in the logistic regression model.
+
+The coefficient for 'I(age^2)' is estimated to be -0.0026, and its associated p-value is < 2e-16, which is highly statistically significant. This implies that the relationship between age and the log-odds of employment is not purely linear but involves a quadratic component. In other words, the impact of age on employment probability is not constant; it changes nonlinearly with age. This finding underscores the importance of considering not only the linear effect of age but also its quadratic effect when modeling employment outcomes.
+
+## iii) Compute the predicted probability of employment for a 20-year-old worker, a 40-year-old worker, and a 60-year-old worker.
+
+```{r}
+
+predicted_probabilities_logit <- predict(binary_logit, newdata = data.frame(age = c(20,40,60)), type = "response")
+
+print(predicted_probabilities_logit)
+
+
+```
+The predicted probability of employment for a 20-year-old worker is approximately 72.51%.
+The predicted probability of employment for a 40-year-old worker is approximately 91.14%.
+The predicted probability of employment for a 60-year-old worker is approximately 83.10%.
+
+
+#Question E
 Are there important differences in your answers to (b)-(d)? Explain.
 
 ```{r}
 names(data)
 ```
 
-```{r}
-binary_lpm_modified <- lm(data$employed~ age + I(age^2)+race+earnwke+married+union+ne_states+
-                        so_states+ce_states+we_states+government+private+self+educ_lths+
-                          educ_hs+educ_somecol+educ_aa+educ_bac+educ_adv+female, 
-                        data,na.action = "na.omit")
-
-coeftest(binary_lpm_modified, vcov = vcovHC(binary_lpm_modified), type = "HC1")
-```
 
 
 
-#Question6
+#Question F
 
 The data set includes variables measuring the workers’ educational attainment, sex, race, marital status, region of the country, and weekly earnings in April 2008.
 
@@ -166,6 +218,17 @@ The data set includes variables measuring the workers’ educational attainment,
 ## (i)
 By adding those covariates to the linear probability model regression of point (b), investigate whether the conclusions on the effect of Age on employment from (b) are affected by omitted variable bias. 
 
+
+```{r}
+data
+
+binary_lpm_modified <- lm(employed~ age + I(age^2)+as.factor(race)+earnwke+as.factor(married)+union+ne_states+
+                        so_states+ce_states+we_states+government+private+self+educ_lths+
+                          educ_hs+educ_somecol+educ_aa+educ_bac+educ_adv+female, 
+                        data,na.action = "na.omit")
+
+coeftest(binary_lpm_modified, vcov = vcovHC(binary_lpm_modified), type = "HC1")
+```
 
 ## (ii)
 Use the regression results to discuss the characteristics of workers who were hurt the most by the 2008 financial crisis.
