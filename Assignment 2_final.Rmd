@@ -97,7 +97,7 @@ summary(binary_lm)
 coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
 ```
 
-## i
+## i)
 Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
 \vspace{1em}
 
@@ -105,14 +105,14 @@ Based on this regression, was the age a statistically significant determinant of
 The positive coefficient for the 'Age' variable suggests that, on average, the probability of being employed increases with age. The coefficient is statistically significant with a p-value < 0.001, so there is a statistically significant relationship between age and employment in April 2009. Although it is statistically significant, the overall fit of the model (Multiple R-squared and Adjusted R-squared) indicates that age explains a very small proportion of the variability in employment status. In this case, only about 1.966% of the variability in employment status is explained by age and its squared term. The low p-value (< 2.2e-16) indicates that at least one of the predictors (age or age^2) is related to the dependent variable.
 
 
-## ii
+## ii)
 Is there evidence of a nonlinear effect of age on probability of being employed? 
 \vspace{1em}
 
 Yes, there is evidence of a nonlinear effect of age on the probability of being employed based on the regression results. The negative coefficient for the squared term 'Age^2' is also statistically significant (p-value < 0.001). This suggests that as age increases, the positive effect of age on the probability of being employed diminishes, indicating a curvature or nonlinear pattern in the relationship.
 
 
-## iii
+## iii)
 Compute the predicted probability of employment for a 20-year-old worker, a 40year-old worker, and a 60-year-old worker. 
 
 ```{r}
