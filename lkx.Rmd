@@ -195,6 +195,7 @@ From the confusion matrix, we can see that the model just predict every data poi
 ```{R}
 library(randomForest)
 library(caret)
+
 # emdata$employed <- as.character(emdata$employed)
 # emdata$employed <- as.factor(emdata$employed)
 # random_forest_model <- randomForest(employed ~ ., data = emdata)
