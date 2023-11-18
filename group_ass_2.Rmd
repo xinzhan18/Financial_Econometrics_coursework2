@@ -1,0 +1,284 @@
+---
+title: "group_assignment_2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+# Load required libraries
+install.packages("rpart.plot")
+install.packages(c("e1071", "MASS", "class"))
+install.packages("tree")
+install.packages("randomForest")
+install.packages("margins")
+```
+
+## Load Packages 
+```{r loadLibs, message=FALSE, warning=FALSE}
+library(lubridate)
+library(knitr)
+library(dplyr)
+library(sandwich)
+library(MASS)
+library(lmtest)
+library(quantmod)
+library(readxl)
+library(moments)
+library(sandwich)
+library(estimatr)
+library(margins) # For the marginal effects of Logit and Probit
+library(randomForest)
+library(e1071) # For Naive Bayesian Classifier
+library(MASS) # Logit, Probit, LDA, QDA
+library(class) # for k-NN
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(tree)
+
+
+```
+
+```{r}
+employmentdata <- read_excel('employment_08_09.xlsx')
+head(employmentdata)
+```
+## (a)
+
+```{r}
+worker_employed_mean <-mean(employmentdata$employed)
+print(worker_employed_cd)
+worker_employed_sd <-sd(employmentdata$employed)
+
+n = length(workers_data$employed)
+# Calculate the margin of error using the t-distribution (for a 95% confidence interval)
+margin_of_error <- qt(0.975, df = n - 1) * (worker_employed_sd / sqrt(n))
+
+# Calculate the confidence interval
+lower_bound <- worker_employed_mean - margin_of_error
+higher_bound <- worker_employed_mean + margin_of_error
+confidence_interval <- c(worker_employed_mean - margin_of_error, worker_employed_mean + margin_of_error)
+
+# Print the confidence interval
+print(confidence_interval)
+
+```
+
+## (b)
+```{r}
+binary_lpm <- lm(employed~ age + I(age^2), employmentdata)
+coeftest(binary_lpm, vcov = vcovHC(binary_lpm), type = "HC1")
+# Create a new data frame with the values for age and age squared
+
+for (i in c(20, 40, 60)){
+  new_data <- data.frame(age = i, age_squared = I(i^2))
+
+# Use the predict() function to obtain predictions
+predictions <- predict(binary_lpm, newdata = new_data)
+
+# 'predictions' now contains the predicted values based on the linear model for age = 40
+print(predictions)
+}
+
+```
+
+
+## (c) 
+Repeat (b) using a probit regression.
+```{r}
+binary_probit <- glm(employed ~ age + I(age^2), family = binomial(link = "probit"), data = employmentdata)
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")
+```
+
+## (d)
+Repeat (b) using a logit regression.
+```{r}
+# 4. Run logit and probit regressions
+binary_logit <- glm(employed ~ age + I(age^2), family = binomial(link = "logit"), data = employmentdata)
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
+```
+
+## (e)
+Are there important differences in your answers to (b)-(d)? Explain.
+The estimated coefficients and standard errors of each independent variables (age and age^2) and associated intercepts are smallest in logit regression and highest in linear probability model.In addition, the sign for the estimated coefficient of linear probability model is positive, while negative for logit and probit model.
+
+The predicted probability for employed for a 20-year-old and 40-year-old worker is highest in linear model, followed by logit and probit. The predicted probability for employed for a 60-year-old worker is highest in logit model, followed by linear and probit.
+
+Coefficients and standard errors and predicted probabilities differ among models because of the different functional forms, including linear, logit and probit in our case.
+
+
+```{r}
+# we_state and educ_adv are deleted for collinearity and na number in  earnwke are dropped as well
+binary_lpm_modified <- lm(employed ~ age + I(age^2)+as.factor(race)+earnwke+married+ne_states+
+                        so_states+ce_states+we_states+educ_lths+
+                          educ_hs+educ_somecol+educ_aa+educ_bac+educ_adv+female, 
+                        employmentdata,na.action = "na.omit")
+summary(binary_lpm_modified)
+coeftest(binary_lpm_modified, vcov = vcovHC(binary_lpm_modified), type = "HC1")
+```
+(i) By adding those covariates to the linear probability model regression of point (b), 
+investigate whether the conclusions on the effect of Age on employment from (b) 
+are affected by omitted variable bias.
+
+The impact of age on employment is susceptible to omitted variable bias, a phenomenon characterized by two essential conditions: the independent variables must be correlated with the omitted variable, and the omitted variable must be a determinant of the dependent variable.
+
+In our analysis, we try to address omitted variable bias by incorporating variables representing workers' educational attainment, gender, race, marital status, region of residence, and weekly earnings. From the regression, we find the coefficients for 'earnwke,' 'ce_states,' and 'educ_lths' are all found to be statistically significant at the 0.1% level.
+
+The variable 'earnwke,' which captures average weekly earnings, satisfies both conditions for omitted variable bias. Firstly, average weekly earnings exhibit correlation with age, given that the elderly population typically earns less than their younger counterparts, owing to factors such as technological changes and physical limitations. Secondly, 'earnwke' serves as a determinant of employment, as individuals with lower salaries are more prone to job displacement. Consequently, the coefficients of age may experience downward bias due to the positive correlation between employment and 'earnwke,' and the negative correlation between 'earnwke' and age.
+
+Similarly, the variable 'educ_lths,' indicating whether a worker's highest level of education is less than a high school graduate, satisfies both conditions. Firstly, education levels correlate with age, as the elderly tend to have lower educational exposure than younger groups. Secondly, education levels influence salary to some extent, reflecting increasing market demands for skilled workers. Consequently, the coefficients of age may suffer from downward bias due to the negative correlation between employment and 'educ_lths,' and the positive correlation between 'educ_lths' and age.
+
+Moreover, the observed decrease in the magnitude (ignoring sign) of the coefficients for age and age^2 further validates the presence of downward bias resulting from omitted variables.
+
+
+(ii) Use the regression results to discuss the characteristics of workers who were hurt 
+the most by the 2008 financial crisis.
+
+From the regression results, I can conclude that those workers who are aged, having lower weekly earnings, not living in the central state and highest level of education is less than a high school graduate were hurt most by the 2008 financial crisis.
+
+```{r}
+# LPM predictions
+LPM_predictions_raw <- predict(binary_lpm, newdata = employmentdata, type = "response")
+LPM_predictions<- ifelse(lower_bound < LPM_predictions_raw & LPM_predictions_raw< higher_bound, 1, 0)
+
+# Logit predictions
+logit_predictions_raw <- predict(binary_logit, newdata = employmentdata, type = "response")
+logit_predictions<- ifelse(lower_bound<logit_predictions_raw & logit_predictions_raw< higher_bound, 1, 0)
+
+# Probit predictions
+probit_predictions_raw <- predict(binary_probit, newdata = employmentdata, type = "response")
+probit_predictions<- ifelse(lower_bound<probit_predictions_raw & probit_predictions_raw< higher_bound, 1, 0)
+```
+
+
+
+
+```{r}
+LPM_accuracy    <- sum(LPM_predictions== employmentdata$employed) / nrow(employmentdata)
+logit_accuracy  <- sum( logit_predictions== employmentdata$employed) / nrow(employmentdata)
+probit_accuracy <- sum( probit_predictions== employmentdata$employed) / nrow(employmentdata)
+```
+
+```{r}
+all_accuracies <- c(logit_accuracy, probit_accuracy, LPM_accuracy)
+names(all_accuracies) <- c("Logit", "Probit", "LPM")
+print(all_accuracies)
+```
+
+```{r}
+confusion_matrix_LPM    <- table(Actual = employmentdata$employed, Predicted = LPM_predictions)
+confusion_matrix_logit  <- table(Actual = employmentdata$employed, Predicted = logit_predictions)
+confusion_matrix_probit <- table(Actual = employmentdata$employed, Predicted = probit_predictions)
+```
+
+```{r}
+# Print the confusion matrix
+print(confusion_matrix_LPM)
+print(confusion_matrix_logit)
+print(confusion_matrix_probit)
+```
+
+```{r}
+normalize_cm <- function(cm, type='precision') {
+  if (type == 'precision') {
+    col_sum <- colSums(cm)
+    col_sum[col_sum == 0] <- 1
+    precision_matrix <- sweep(cm, 2, col_sum, FUN="/")
+    return(precision_matrix)
+  } else if (type == 'recall') {
+    row_sum <- rowSums(cm)
+    row_sum[row_sum == 0] <- 1
+    recall_matrix <- sweep(cm, 1, row_sum, FUN="/")
+    return(recall_matrix)
+  } else {
+    stop("Type must be either 'precision' or 'recall'")
+  }
+}
+```
+
+```{r}
+confusion_matrix_LPM_normalized <- normalize_cm(confusion_matrix_LPM)
+confusion_matrix_logit_normalized <- normalize_cm(confusion_matrix_logit)
+confusion_matrix_probit_normalized <- normalize_cm(confusion_matrix_probit)
+```
+
+```{r}
+print(confusion_matrix_LPM_normalized)
+print(confusion_matrix_logit_normalized)
+print(confusion_matrix_probit_normalized)
+```
+
+```{r}
+confusion_matrix_LPM_normalized <- normalize_cm(confusion_matrix_LPM,'recall')
+confusion_matrix_logit_normalized <- normalize_cm(confusion_matrix_logit,'recall')
+confusion_matrix_probit_normalized <- normalize_cm(confusion_matrix_probit,'recall')
+```
+
+```{r}
+print(confusion_matrix_LPM_normalized)
+print(confusion_matrix_logit_normalized)
+print(confusion_matrix_probit_normalized)
+```
+```{r}
+employmentdata<-employmentdata%>%
+  mutate(age_2 = age**2)
+# 4.a Use decision trees and compare their accuracy
+tree_model <- tree(as.factor(employed)~ age + I(age^2), data = employmentdata)
+plot(tree_model)
+text(tree_model,pretty=1)
+
+## Alternative using rpart library (nicer plots):
+## tree_model <- rpart(as.factor(Good) ~ Volume+ Turnover+ MarketCap + P2E+ B2M, data = reg_data)
+## summary(tree_model)
+## prp(tree_model, type = 2, extra = 1)
+
+
+# 4.b Use Random forests and compare their accuracy
+set.seed(123) # Setting a seed for reproducibility
+
+rf_model <- randomForest(as.factor(employed)~ age + age_2, data = employmentdata, num.trees= 100) 
+
+# 4.c Fit Naive Bayes Classifier
+nb_model <- naiveBayes(as.factor(employed)~ age + age_2, data = employmentdata)
+
+## Alternative using naivebayes library:
+
+# nb_model <- naive_bayes(as.factor(Good) ~ Volume+ Turnover+ MarketCap + P2E+ B2M, data = reg_data)
+# nb_predictions <-predict(nb_model, newdata = reg_data, type = "class")
+# nb_accuracy    <- sum(nb_predictions == reg_data$Good) / nrow(reg_data)
+
+
+# 4.d Fit LDA Classifier
+lda_model <- lda(as.factor(employed)~ age + age_2, data = employmentdata)
+
+# 4.e Fit QDA Classifier
+qda_model <- qda(as.factor(employed)~ age + age_2, data = employmentdata)
+
+
+# 4.f Fit kNN Classifier
+# First scale the data since kNN is sensitive to the scale of the data
+scaled_data <- scale(employmentdata[, c("age", "age_2")])
+# Define the number of neighbors
+k <- 7
+knn_predictions <- knn(train = scaled_data, test = scaled_data, cl = as.factor(employmentdata$employed), k = k)
+
+
+```
+
+```{r}
+# Decision trees predictions
+tree_predictions <- predict(tree_model, newdata = employmentdata, type = "class")
+
+# Random forest predictions
+
+rf_predictions <- predict(rf_model, data = employmentdata)
+
+# Naive Bayes predictions
+nb_predictions <- predict(nb_model, newdata = employmentdata, type = "class")
+
+# LDA predictions
+lda_predictions <- predict(lda_model, newdata = employmentdata)$class
+
+# QDA predictions
+qda_predictions <- predict(qda_model, newdata = employmentdata)$class
+```
+

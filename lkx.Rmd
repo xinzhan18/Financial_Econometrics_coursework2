@@ -1,0 +1,256 @@
+---
+title: |
+  | Financial Econometric in R/Python 
+  | Assignment One
+author: |
+  | Group 2
+  | Hessa Alabbas 02513615
+  | Xin Zhan 02299544
+  | Alex Rached 01894052
+  | Yan Cai 02381303
+  | Kexin Liu 02362049
+  |
+  | The Business School, Imperial College London
+  | 
+date: "23-10-2023"
+output:
+  pdf_document: 
+    keep_tex: true›
+    latex_engine: xelatex
+
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{caption}
+---
+
+
+\newpage
+\tableofcontents
+\newpage
+
+\pagebreak
+
+# Introduction
+
+## Load Packages 
+```{r loadLibs, message=FALSE, warning=FALSE}
+library(lubridate)
+library(knitr)
+library(dplyr)
+library(sandwich)
+library(MASS)
+library(lmtest)
+library(quantmod)
+library(readxl)
+library(moments)
+library(sandwich)
+library(estimatr)
+
+```
+
+```{r}
+library(margins) # For the marginal effects of Logit and Probit
+library(randomForest)
+library(e1071) # For Naive Bayesian Classifier
+library(MASS) # Logit, Probit, LDA, QDA
+library(class) # for k-NN
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(tree)
+```
+
+## Load Data
+```{r message=FALSE,warning=FALSE}
+emdata <- read_excel('employment_08_09.xlsx')
+
+head(emdata)
+emdata <- na.omit(emdata)
+```
+
+# Question A
+
+```{R}
+num_employed <- sum(emdata$employed)
+frac = num_employed / nrow(emdata)
+frac
+```
+```{R}
+se <- sqrt(frac * (1 - frac) / nrow(emdata))
+
+z_score <- qnorm(0.975)
+
+conf_interval_lower <- frac - z_score * se
+conf_interval_upper <- frac + z_score * se
+
+conf_interval_lower
+conf_interval_upper
+```
+
+# Question B
+
+```{R}
+emdata$age_squared <- emdata$age^2
+
+binary_lpm <- lm(employed ~ age + age_squared, emdata)
+summary(binary_lpm)
+coeftest(binary_lpm, vcov = vcovHC(binary_lpm), type = "HC1")
+```
+```{R}
+new_data <- data.frame(age = c(20, 40, 60), age_squared = c(20^2, 40^2, 60^2))
+
+predicted_probs <- predict(binary_lpm, newdata = new_data, type = "response")
+
+predicted_probs
+```
+
+
+
+```{R}
+binary_logit <- glm(employed ~ age + age_squared, family = binomial(link = "logit"), emdata)
+binary_probit <- glm(employed ~ age + age_squared, family = binomial(link = "probit"), emdata)
+
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")
+```
+
+
+# Question g
+```{R}
+# Predict probabilities
+lm_predictions <- predict(binary_lpm, emdata)
+
+# Convert to classifications
+lm_classifications <- ifelse(lm_predictions > 0.5, 1, 0)
+
+# Calculate accuracy
+lm_accuracy <- mean(lm_classifications == emdata$employed)
+lm_accuracy
+
+
+
+# Predict probabilities
+probit_predictions <- predict(binary_probit, emdata, type = "response")
+
+# Convert to classifications
+probit_classifications <- ifelse(probit_predictions > 0.5, 1, 0)
+
+# Calculate accuracy
+probit_accuracy <- mean(probit_classifications == emdata$employed)
+probit_accuracy
+
+
+
+
+# Predict probabilities
+logit_predictions <- predict(binary_logit, emdata, type = "response")
+
+# Convert to classifications
+logit_classifications <- ifelse(logit_predictions > 0.5, 1, 0)
+
+# Calculate accuracy
+logit_accuracy <- sum(logit_classifications == emdata$employed) / nrow(emdata)
+logit_accuracy
+```
+
+
+# Question h
+
+# Decision Tree
+```{R}
+# Decision Tree
+library(rpart)
+decision_tree_model <- rpart(as.factor(employed) ~ age +  I(age ^ 2), data = emdata)
+
+dt_predictions <- predict(decision_tree_model, newdata = emdata, type = "class")
+
+# Accuracy
+dt_accuracy <- sum(dt_predictions == emdata$employed) /  nrow(emdata)
+dt_accuracy
+
+#BELOW is calculating the precision, recall and F1 score:
+dt_predictions_factor <- as.factor(dt_predictions)
+employed_factor <- as.factor(emdata$employed)
+
+# Use the confusionMatrix function from the caret package
+conf_matrix <- confusionMatrix(dt_predictions_factor, employed_factor)
+
+# Print the confusion matrix along with other statistics
+print(conf_matrix)
+
+# Recall (Sensitivity), Precision (Positive Predictive Value), and F1 Score can be extracted as follows:
+recall <- conf_matrix$byClass['Sensitivity']
+precision <- conf_matrix$byClass['Pos Pred Value']
+F1_score <- 2 * (precision * recall) / (precision + recall)
+
+# Print the metrics
+print(paste("Recall:", recall))
+print(paste("Precision:", precision))
+print(paste("F1 Score:", F1_score))
+```
+From the confusion matrix, we can see that the model just predict every data point as 1, although the accuracy seems high, it is due to the large proportion of 1 in our data. Therefore, we can also see that the recall for class 0 is 0, the precision and F1 score are all NaN.
+
+# Random Forest
+```{R}
+library(randomForest)
+library(caret)
+# emdata$employed <- as.character(emdata$employed)
+# emdata$employed <- as.factor(emdata$employed)
+# random_forest_model <- randomForest(employed ~ ., data = emdata)
+
+set.seed(123) # Setting a seed for reproducibility
+
+rf_model <- randomForest(as.factor(employed) ~ age +  I(age ^ 2), data= emdata, num.trees= 100) 
+rf_predictions <- predict(rf_model , emdata)
+
+# Accuracy
+rf_accuracy <- mean(rf_predictions == emdata$employed)
+rf_accuracy
+
+#BELOW is calculating the precision, recall and F1 score:
+rf_predictions_factor <- as.factor(rf_predictions)
+employed_factor <- as.factor(emdata$employed)
+
+# Use the confusionMatrix function from the caret package
+conf_matrix <- confusionMatrix(rf_predictions_factor, employed_factor)
+
+# Print the confusion matrix along with other statistics
+print(conf_matrix)
+
+# Recall (Sensitivity), Precision (Positive Predictive Value), and F1 Score can be extracted as follows:
+recall <- conf_matrix$byClass['Sensitivity']
+precision <- conf_matrix$byClass['Pos Pred Value']
+F1_score <- 2 * (precision * recall) / (precision + recall)
+
+# Print the metrics
+print(paste("Recall:", recall))
+print(paste("Precision:", precision))
+print(paste("F1 Score:", F1_score))
+```
+Same as above. The model just classify every data point as class 1.
+
+
+# KNN
+```{R}
+library(class)
+
+# train_data_scaled <- scale(emdata)
+# test_data_scaled <- scale(emdata, center = attr(train_data_scaled, "scaled:center"), scale = attr(train_data_scaled, "scaled:scale"))
+# 
+# # Fit the k-NN model and make predictions
+# k <- 5  # Choose an appropriate k
+# knn_pred <- knn(train = train_data_scaled, test = test_data_scaled, cl = train_target, k = k)
+# 
+# # Evaluate model performance
+# table(Predicted = knn_pred, Actual = test_target)
+
+scaled_data <- scale(emdata[, c("age", "age_squared")])
+# Define the number of neighbors
+k <- 7
+knn_predictions <- knn(train = scaled_data, test = scaled_data, cl = as.factor(emdata$employed), k = k)
+
+knn_accuracy    <- sum(knn_predictions == emdata$employed) / nrow(emdata)
+knn_accuracy
+```
+
