@@ -574,9 +574,9 @@ Are there important differences in your answers to (b)-(d)? Explain.
 \vspace{1em}
 
 The estimated coefficients and standard errors of each independent
-variables (age and age\^{}2) and associated intercepts are smallest in
-logit regression and highest in linear probability model. In addition,
-the sign for the estimated coefficient of linear probability model is
+variables (age and age\^{}2) and associated intercepts are highest in
+logit regression and lowest in linear probability model. In addition,
+the estimated coefficient of intercept in linear probability model is
 positive, while negative for logit and probit model.
 
 The predicted probability for employed for a 20-year-old and 40-year-old
@@ -692,8 +692,11 @@ In our analysis, we try to address omitted variable bias by
 incorporating variables representing workers' educational attainment,
 gender, race, marital status, region of residence, and weekly earnings.
 From the regression, we find the coefficients for `earnwke,'
-`ce\_states,' and `educ\_lths' are all found to be statistically
-significant at the 0.1\% level.
+`ce\_states,' `educ\_lths,' and ' as.factor(race)2,' are all found to be
+statistically significant at the 1\% level.
+
+However, to discuss potential omitted variables, we focus on following
+ones.
 
 The variable `earnwke,' which captures average weekly earnings,
 satisfies both conditions for omitted variable bias. Firstly, average
