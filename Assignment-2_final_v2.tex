@@ -1,0 +1,1187 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{caption}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Financial Econometric in R/Python\\
+Assignment Two}
+\author{Group 2\\
+Hessa Alabbas 02513615\\
+Xin Zhan 02299544\\
+Alex Rached 01894052\\
+Yan Cai 02381303\\
+Kexin Liu 02362049\\
+\strut \\
+The Business School, Imperial College London\\}
+\date{18-11-2023}
+
+\begin{document}
+\maketitle
+
+\newpage
+\tableofcontents
+\listoftables
+\newpage
+
+\pagebreak
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+\hypertarget{load-packages}{%
+\subsection{Load Packages}\label{load-packages}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lubridate)}
+\FunctionTok{library}\NormalTok{(knitr)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(lmtest)}
+\FunctionTok{library}\NormalTok{(readxl)}
+\FunctionTok{library}\NormalTok{(moments)}
+\FunctionTok{library}\NormalTok{(sandwich)}
+\FunctionTok{library}\NormalTok{(estimatr)}
+\FunctionTok{library}\NormalTok{(margins) }
+\FunctionTok{library}\NormalTok{(randomForest)}
+\FunctionTok{library}\NormalTok{(e1071) }
+\FunctionTok{library}\NormalTok{(MASS) }
+\FunctionTok{library}\NormalTok{(class) }
+\FunctionTok{library}\NormalTok{(lmtest)}
+\FunctionTok{library}\NormalTok{(tree)}
+\FunctionTok{library}\NormalTok{(knitr)}
+\FunctionTok{library}\NormalTok{(rpart)}
+\FunctionTok{library}\NormalTok{(ROSE)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{load-data}{%
+\subsection{Load Data}\label{load-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}}  \FunctionTok{read\_excel}\NormalTok{(}\StringTok{\textquotesingle{}employment\_08\_09.xlsx\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{question-a}{%
+\section{Question A}\label{question-a}}
+
+What fraction of workers in the sample were employed in April 2009? Use
+your answer to compute a 95\% confidence interval for the probability
+that a worker was employed in April 2009, conditional on being employed
+in April 2008.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#sample size}
+\NormalTok{n }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(data)}
+
+\CommentTok{\#employed fraction}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{employed }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{/}\NormalTok{ n}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Fraction of workers employed in April 2009:"}\NormalTok{, p, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Fraction of workers employed in April 2009: 0.8754619
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#margin of error}
+\NormalTok{margin }\OtherTok{\textless{}{-}} \FunctionTok{qnorm}\NormalTok{(}\FloatTok{0.975}\NormalTok{)}\SpecialCharTok{*}\FunctionTok{sqrt}\NormalTok{(p}\SpecialCharTok{*}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{p)}\SpecialCharTok{/}\NormalTok{n)}
+
+\CommentTok{\#lower and upper intervals}
+\NormalTok{lowerinterval }\OtherTok{\textless{}{-}}\NormalTok{ p }\SpecialCharTok{{-}}\NormalTok{ margin}
+\NormalTok{upperinterval }\OtherTok{\textless{}{-}}\NormalTok{ p }\SpecialCharTok{+}\NormalTok{ margin}
+
+\FunctionTok{cat}\NormalTok{(lowerinterval,upperinterval)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 0.8666648 0.884259
+\end{verbatim}
+
+The fraction of workers in the sample is 0.8754619. The interpretation
+is that, based on the sample data and statistical analysis, we are 95\%
+confident that the true probability of a worker being employed in April
+2009, given they were employed in April 2008, lies between 0.8666648 and
+0.884259.
+
+\hypertarget{question-b}{%
+\section{Question B}\label{question-b}}
+
+Regress Employed on Age and Age**2 , using a linear probability model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{binary\_lm }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(employed }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ data)}
+\FunctionTok{summary}\NormalTok{(binary\_lm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Call:
+lm(formula = employed ~ age + I(age^2), data = data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.91925  0.08314  0.10020  0.13831  0.28944 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  3.075e-01  5.472e-02   5.619 2.02e-08 ***
+age          2.827e-02  2.747e-03  10.293  < 2e-16 ***
+I(age^2)    -3.266e-04  3.276e-05  -9.971  < 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.327 on 5409 degrees of freedom
+Multiple R-squared:  0.01966,   Adjusted R-squared:  0.01929 
+F-statistic: 54.22 on 2 and 5409 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{coefest\_df }\OtherTok{\textless{}{-}} \FunctionTok{coeftest}\NormalTok{(binary\_lm, }\AttributeTok{vcov =} \FunctionTok{vcovHC}\NormalTok{(binary\_lm), }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{i}{%
+\subsection{i)}\label{i}}
+
+Based on this regression, was the age a statistically significant
+determinant of employment in April 2009. \vspace{1em}
+
+The positive coefficient for the `Age' variable suggests that, on
+average, the probability of being employed increases with age. The
+coefficient is statistically significant with a p-value \textless{}
+0.001, so there is a statistically significant relationship between age
+and employment in April 2009. Although it is statistically significant,
+the overall fit of the model (Multiple R-squared and Adjusted R-squared)
+indicates that age explains a very small proportion of the variability
+in employment status. In this case, only about 1.966\% of the
+variability in employment status is explained by age and its squared
+term. The low p-value (\textless{} 2.2e-16) indicates that at least one
+of the predictors (age or age\^{}2) is related to the dependent
+variable.
+
+\hypertarget{ii}{%
+\subsection{ii)}\label{ii}}
+
+Is there evidence of a nonlinear effect of age on probability of being
+employed? \vspace{1em}
+
+Yes, there is evidence of a nonlinear effect of age on the probability
+of being employed based on the regression results. The negative
+coefficient for the squared term `Age\^{}2' is also statistically
+significant (p-value \textless{} 0.001). This suggests that as age
+increases, the positive effect of age on the probability of being
+employed diminishes, indicating a curvature or nonlinear pattern in the
+relationship.
+
+\hypertarget{iii}{%
+\subsection{iii)}\label{iii}}
+
+Compute the predicted probability of employment for a 20-year-old
+worker, a 40year-old worker, and a 60-year-old worker.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predicted\_probabilities }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(binary\_lm, }
+                                   \AttributeTok{newdata =} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{age =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{,}\DecValTok{40}\NormalTok{,}\DecValTok{60}\NormalTok{)), }
+                                   \AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(predicted\_probabilities)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         1         2         3 
+## 0.7422841 0.9157685 0.8279458
+\end{verbatim}
+
+The predicted probability of employment for a 20-year-old worker is
+approximately 74.23\%. The predicted probability of employment for a
+40-year-old worker is approximately 91.58\%. The predicted probability
+of employment for a 60-year-old worker is approximately 82.79\%.
+
+\hypertarget{question-c}{%
+\section{Question C}\label{question-c}}
+
+Repeat (b) using a probit regression.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{binary\_probit }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(employed }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{), }
+                     \AttributeTok{family =} \FunctionTok{binomial}\NormalTok{(}\AttributeTok{link =} \StringTok{"probit"}\NormalTok{), }
+\NormalTok{                     data)}
+\FunctionTok{summary}\NormalTok{(binary\_probit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = employed ~ age + I(age^2), family = binomial(link = "probit"), 
+##     data = data)
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(>|z|)    
+## (Intercept) -1.2579285  0.2466845  -5.099 3.41e-07 ***
+## age          0.1217230  0.0126633   9.612  < 2e-16 ***
+## I(age^2)    -0.0014125  0.0001522  -9.279  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4068.4  on 5411  degrees of freedom
+## Residual deviance: 3973.8  on 5409  degrees of freedom
+## AIC: 3979.8
+## 
+## Number of Fisher Scoring iterations: 4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{coeftest}\NormalTok{(binary\_probit, }\AttributeTok{vcov =} \FunctionTok{vcovHC}\NormalTok{(binary\_probit), }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## z test of coefficients:
+## 
+##                Estimate  Std. Error z value  Pr(>|z|)    
+## (Intercept) -1.25792851  0.25246321 -4.9826 6.273e-07 ***
+## age          0.12172302  0.01306499  9.3167 < 2.2e-16 ***
+## I(age^2)    -0.00141246  0.00015776 -8.9530 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+The positive coefficient for `age' (0.1217230) indicates that, on
+average, the log-odds of being employed increase with age. The negative
+coefficient for the squared term `I(age\^{}2)' (-0.0014125) suggests a
+nonlinear effect. As `age' increases, the positive effect on the
+log-odds of being employed diminishes. The z-tests show that all
+coefficients are statistically significant at the 0.05 significance
+level, indicating that age and its squared term are significantly
+related to the log-odds of being employed.
+
+\hypertarget{i-1}{%
+\subsection{i)}\label{i-1}}
+
+Based on this regression, was the age a statistically significant
+determinant of employment in April 2009. \vspace{1em}
+
+Yes, based on the results of the probit regression model, age appears to
+be a statistically significant determinant of employment in April 2009.
+The positive coefficient for the `age' variable suggests that, on
+average, the log-odds of being employed increase with age. This
+coefficient is statistically significant with a very low p-value
+(\textless{} 0.001), indicating strong evidence that the effect of age
+on employment is different from zero.
+
+The low p-values indicate that both `age' and `age\^{}2' are highly
+unlikely to have coefficients equal to zero, suggesting that both linear
+and nonlinear components of age are important in determining employment
+status.
+
+\hypertarget{ii-1}{%
+\subsection{ii)}\label{ii-1}}
+
+Is there evidence of a nonlinear effect of age on probability of being
+employed? \vspace{1em}
+
+The negative coefficient for the squared term `I(age\^{}2)' (-0.0014)
+suggests a nonlinear effect. Specifically, as `age' increases, the
+positive effect on the log-odds of being employed diminishes. This
+coefficient is also statistically significant with a very low p-value
+(\textless{} 0.001).
+
+\hypertarget{iii-1}{%
+\subsection{iii)}\label{iii-1}}
+
+Compute the predicted probability of employment for a 20-year-old
+worker, a 40-year-old worker, and a 60-year-old worker.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predicted\_probabilities\_probit }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(binary\_probit,}
+                                          \AttributeTok{newdata =} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{age =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{,}\DecValTok{40}\NormalTok{,}\DecValTok{60}\NormalTok{)),}
+                                          \AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(predicted\_probabilities\_probit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         1         2         3 
+## 0.7295817 0.9116616 0.8316237
+\end{verbatim}
+
+The predicted probability of employment for a 20-year-old worker is
+approximately 72.96\%. The predicted probability of employment for a
+40-year-old worker is approximately 91.17\%. The predicted probability
+of employment for a 60-year-old worker is approximately 83.16\%.
+
+\hypertarget{question-d}{%
+\section{Question D}\label{question-d}}
+
+Repeat (b) using a logit regression.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{binary\_logit }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(employed }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{), }
+                    \AttributeTok{family =} \FunctionTok{binomial}\NormalTok{(}\AttributeTok{link =} \StringTok{"logit"}\NormalTok{), }
+\NormalTok{                    data)}
+\FunctionTok{summary}\NormalTok{(binary\_logit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = employed ~ age + I(age^2), family = binomial(link = "logit"), 
+##     data = data)
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(>|z|)    
+## (Intercept) -2.4897541  0.4373964  -5.692 1.25e-08 ***
+## age          0.2254662  0.0228093   9.885  < 2e-16 ***
+## I(age^2)    -0.0026237  0.0002757  -9.518  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 4068.4  on 5411  degrees of freedom
+## Residual deviance: 3972.9  on 5409  degrees of freedom
+## AIC: 3978.9
+## 
+## Number of Fisher Scoring iterations: 4
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{coeftest}\NormalTok{(binary\_logit, }\AttributeTok{vcov =} \FunctionTok{vcovHC}\NormalTok{(binary\_logit), }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)                     }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## z test of coefficients:
+## 
+##                Estimate  Std. Error z value  Pr(>|z|)    
+## (Intercept) -2.48975412  0.44690359 -5.5711 2.531e-08 ***
+## age          0.22546624  0.02348717  9.5995 < 2.2e-16 ***
+## I(age^2)    -0.00262366  0.00028515 -9.2010 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\hypertarget{i-2}{%
+\subsection{i)}\label{i-2}}
+
+Based on this regression, was the age a statistically significant
+determinant of employment in April 2009. \vspace{1em}
+
+Yes, age was a statistically significant determinant of employment in
+April 2009, as evidenced by the low p-values for both the `Age' and
+`I(age\^{}2)' coefficients. The positive coefficient for `Age' indicates
+a positive linear relationship. These findings highlight the importance
+of considering age as a factor influencing employment outcomes during
+the specified period. The residual deviance is 3972.9 on 5409 degrees of
+freedom, indicating a reasonable fit of the model to the data.
+
+\hypertarget{ii-2}{%
+\subsection{ii)}\label{ii-2}}
+
+Is there evidence of a nonlinear effect of age on probability of being
+employed? \vspace{1em}
+
+Yes, there is evidence of a nonlinear effect of age on the probability
+of being employed, as indicated by the coefficient for the quadratic
+term `I(age\^{}2)' in the logistic regression model.
+
+The coefficient for `I(age\^{}2)' is estimated to be -0.0026, and its
+associated p-value is \textless{} 2e-16, which is highly statistically
+significant. This implies that the relationship between age and the
+log-odds of employment is not purely linear but involves a quadratic
+component. In other words, the impact of age on employment probability
+is not constant; it changes nonlinearly with age. This finding
+underscores the importance of considering not only the linear effect of
+age but also its quadratic effect when modeling employment outcomes.
+
+\hypertarget{iii-2}{%
+\subsection{iii)}\label{iii-2}}
+
+Compute the predicted probability of employment for a 20-year-old
+worker, a 40-year-old worker, and a 60-year-old worker.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predicted\_probabilities\_logit }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(binary\_logit, }
+                                         \AttributeTok{newdata =} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{age =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{,}\DecValTok{40}\NormalTok{,}\DecValTok{60}\NormalTok{)), }
+                                         \AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(predicted\_probabilities\_logit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         1         2         3 
+## 0.7251410 0.9114157 0.8310454
+\end{verbatim}
+
+The predicted probability of employment for a 20-year-old worker is
+approximately 72.51\%. The predicted probability of employment for a
+40-year-old worker is approximately 91.14\%. The predicted probability
+of employment for a 60-year-old worker is approximately 83.10\%.
+
+\hypertarget{question-e}{%
+\section{Question E}\label{question-e}}
+
+Are there important differences in your answers to (b)-(d)? Explain.
+
+\vspace{1em}
+
+The estimated coefficients and standard errors of each independent
+variables (age and age\^{}2) and associated intercepts are highest in
+logit regression and lowest in linear probability model. In addition,
+the estimated coefficient of intercept in linear probability model is
+positive, while negative for logit and probit model.
+
+The predicted probability for employed for a 20-year-old and 40-year-old
+worker is highest in linear model, followed by logit and probit. The
+predicted probability for employed for a 60-year-old worker is highest
+in logit model, followed by linear and probit.
+
+Coefficients and standard errors and predicted probabilities differ
+among models because of the different functional forms, including
+linear, logit and probit in our case.
+
+\hypertarget{question-f}{%
+\section{Question F}\label{question-f}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# we\_state and educ\_adv are deleted for collinearity and }
+\CommentTok{\# na number in earnwke are dropped as well}
+\NormalTok{binary\_lpm\_modified }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(employed }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{+}\FunctionTok{as.factor}\NormalTok{(race)}\SpecialCharTok{+}\NormalTok{earnwke}\SpecialCharTok{+}
+\NormalTok{                            married}\SpecialCharTok{+}\NormalTok{ne\_states}\SpecialCharTok{+}\NormalTok{so\_states}\SpecialCharTok{+}\NormalTok{ce\_states}\SpecialCharTok{+}\NormalTok{we\_states}\SpecialCharTok{+}
+\NormalTok{                            educ\_lths}\SpecialCharTok{+}\NormalTok{ educ\_hs}\SpecialCharTok{+}\NormalTok{educ\_somecol}\SpecialCharTok{+}\NormalTok{educ\_aa}\SpecialCharTok{+}\NormalTok{educ\_bac}\SpecialCharTok{+}
+\NormalTok{                            educ\_adv}\SpecialCharTok{+}\NormalTok{female, }
+\NormalTok{                        data,}\AttributeTok{na.action =} \StringTok{"na.omit"}\NormalTok{)}
+\FunctionTok{summary}\NormalTok{(binary\_lpm\_modified)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = employed ~ age + I(age^2) + as.factor(race) + earnwke + 
+##     married + ne_states + so_states + ce_states + we_states + 
+##     educ_lths + educ_hs + educ_somecol + educ_aa + educ_bac + 
+##     educ_adv + female, data = data, na.action = "na.omit")
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.99186  0.06504  0.10404  0.14595  0.38047 
+## 
+## Coefficients: (2 not defined because of singularities)
+##                    Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)       3.524e-01  6.116e-02   5.762 8.84e-09 ***
+## age               2.487e-02  3.043e-03   8.170 3.91e-16 ***
+## I(age^2)         -2.900e-04  3.613e-05  -8.026 1.26e-15 ***
+## as.factor(race)2 -3.842e-02  1.700e-02  -2.260 0.023854 *  
+## as.factor(race)3 -4.750e-03  1.864e-02  -0.255 0.798879    
+## earnwke           3.406e-05  9.732e-06   3.499 0.000470 ***
+## married          -2.610e-03  1.046e-02  -0.249 0.803012    
+## ne_states         1.676e-02  1.427e-02   1.174 0.240283    
+## so_states         2.395e-02  1.331e-02   1.799 0.072107 .  
+## ce_states         4.392e-02  1.368e-02   3.211 0.001334 ** 
+## we_states                NA         NA      NA       NA    
+## educ_lths        -8.236e-02  2.399e-02  -3.433 0.000601 ***
+## educ_hs          -2.082e-02  1.736e-02  -1.200 0.230302    
+## educ_somecol      2.405e-04  1.816e-02   0.013 0.989438    
+## educ_aa           7.347e-03  2.010e-02   0.366 0.714682    
+## educ_bac         -1.284e-02  1.702e-02  -0.755 0.450565    
+## educ_adv                 NA         NA      NA       NA    
+## female           -4.849e-03  9.971e-03  -0.486 0.626739    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.3257 on 4757 degrees of freedom
+##   (639 observations deleted due to missingness)
+## Multiple R-squared:  0.03231,    Adjusted R-squared:  0.02926 
+## F-statistic: 10.59 on 15 and 4757 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{coeftest}\NormalTok{(binary\_lpm\_modified, }\AttributeTok{vcov =} \FunctionTok{vcovHC}\NormalTok{(binary\_lpm\_modified), }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## t test of coefficients:
+## 
+##                     Estimate  Std. Error t value  Pr(>|t|)    
+## (Intercept)       3.5240e-01  7.2419e-02  4.8661 1.175e-06 ***
+## age               2.4866e-02  3.5748e-03  6.9560 3.977e-12 ***
+## I(age^2)         -2.8996e-04  4.2178e-05 -6.8746 7.021e-12 ***
+## as.factor(race)2 -3.8416e-02  1.8713e-02 -2.0529 0.0401368 *  
+## as.factor(race)3 -4.7501e-03  1.9209e-02 -0.2473 0.8046987    
+## earnwke           3.4057e-05  9.5945e-06  3.5496 0.0003895 ***
+## married          -2.6098e-03  1.0509e-02 -0.2483 0.8038795    
+## ne_states         1.6760e-02  1.4487e-02  1.1570 0.2473497    
+## so_states         2.3948e-02  1.3615e-02  1.7590 0.0786501 .  
+## ce_states         4.3921e-02  1.3551e-02  3.2412 0.0011987 ** 
+## educ_lths        -8.2361e-02  2.7005e-02 -3.0499 0.0023018 ** 
+## educ_hs          -2.0822e-02  1.6573e-02 -1.2564 0.2090417    
+## educ_somecol      2.4045e-04  1.6980e-02  0.0142 0.9887021    
+## educ_aa           7.3469e-03  1.8034e-02  0.4074 0.6837357    
+## educ_bac         -1.2841e-02  1.5348e-02 -0.8367 0.4028313    
+## female           -4.8493e-03  1.0061e-02 -0.4820 0.6298405    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\hypertarget{i-3}{%
+\subsection{i)}\label{i-3}}
+
+By adding those covariates to the linear probability model regression of
+point (b), investigate whether the conclusions on the effect of Age on
+employment from (b) are affected by omitted variable bias. \vspace{1em}
+
+The impact of age on employment is susceptible to omitted variable bias,
+a phenomenon characterized by two essential conditions: the independent
+variables must be correlated with the omitted variable, and the omitted
+variable must be a determinant of the dependent variable.
+
+In our analysis, we try to address omitted variable bias by
+incorporating variables representing workers' educational attainment,
+gender, race, marital status, region of residence, and weekly earnings.
+From the regression, we find the coefficients for `earnwke,'
+`ce\_states,' `educ\_lths,' and ' as.factor(race)2,' are all found to be
+statistically significant at the 1\% level.
+
+However, to discuss potential omitted variables, we focus on following
+ones.
+
+The variable `earnwke,' which captures average weekly earnings,
+satisfies both conditions for omitted variable bias. Firstly, average
+weekly earnings exhibit correlation with age, given that the elderly
+population typically earns less than their younger counterparts, owing
+to factors such as technological changes and physical limitations.
+Secondly, `earnwke' serves as a determinant of employment, as
+individuals with lower salaries are more prone to job displacement.
+Consequently, the coefficients of age may experience downward bias due
+to the positive correlation between employment and `earnwke,' and the
+negative correlation between `earnwke' and age.
+
+Similarly, the variable `educ\_lths,' indicating whether a worker's
+highest level of education is less than a high school graduate,
+satisfies both conditions. Firstly, education levels correlate with age,
+as the elderly tend to have lower educational exposure than younger
+groups. Secondly, education levels influence salary to some extent,
+reflecting increasing market demands for skilled workers. Consequently,
+the coefficients of age may suffer from downward bias due to the
+negative correlation between employment and `educ\_lths,' and the
+positive correlation between `educ\_lths' and age.
+
+Moreover, the observed decrease in the magnitude (ignoring sign) of the
+coefficients for age and age\^{}2 further validates the presence of
+downward bias resulting from omitted variables.
+
+\hypertarget{ii-3}{%
+\subsection{ii)}\label{ii-3}}
+
+Use the regression results to discuss the characteristics of workers who
+were hurt the most by the 2008 financial crisis. \vspace{1em}
+
+From the regression results, I can conclude that those workers who are
+aged, black, having lower weekly earnings, not living in the central
+state and highest level of education is less than a high school graduate
+were hurt most by the 2008 financial crisis.
+
+\hypertarget{question-g}{%
+\section{Question G}\label{question-g}}
+
+Use the models in (b)-(d) to assess the in-sample accuracy of the
+classification. What is the proportion of correctly assigned classes?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create a function to calucate the precision and recall}
+\NormalTok{normalize\_cm }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(cm, }\AttributeTok{type=}\StringTok{\textquotesingle{}precision\textquotesingle{}}\NormalTok{) \{}
+  \ControlFlowTok{if}\NormalTok{ (type }\SpecialCharTok{==} \StringTok{\textquotesingle{}precision\textquotesingle{}}\NormalTok{) \{}
+\NormalTok{    col\_sum }\OtherTok{\textless{}{-}} \FunctionTok{colSums}\NormalTok{(cm)}
+\NormalTok{    col\_sum[col\_sum }\SpecialCharTok{==} \DecValTok{0}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{    precision\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{sweep}\NormalTok{(cm, }\DecValTok{2}\NormalTok{, col\_sum, }\AttributeTok{FUN=}\StringTok{"/"}\NormalTok{)}
+    \FunctionTok{return}\NormalTok{(precision\_matrix)}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{ (type }\SpecialCharTok{==} \StringTok{\textquotesingle{}recall\textquotesingle{}}\NormalTok{) \{}
+\NormalTok{    row\_sum }\OtherTok{\textless{}{-}} \FunctionTok{rowSums}\NormalTok{(cm)}
+\NormalTok{    row\_sum[row\_sum }\SpecialCharTok{==} \DecValTok{0}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{    recall\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{sweep}\NormalTok{(cm, }\DecValTok{1}\NormalTok{, row\_sum, }\AttributeTok{FUN=}\StringTok{"/"}\NormalTok{)}
+    \FunctionTok{return}\NormalTok{(recall\_matrix)}
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    \FunctionTok{stop}\NormalTok{(}\StringTok{"Type must be either \textquotesingle{}precision\textquotesingle{} or \textquotesingle{}recall\textquotesingle{}"}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\CommentTok{\# To get recall and precision from the matrix}
+\NormalTok{extract\_values }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(matrix\_recall,matrix\_precision) \{}
+\NormalTok{  recall }\OtherTok{\textless{}{-}} \FunctionTok{diag}\NormalTok{(matrix\_recall)}
+\NormalTok{  precision }\OtherTok{\textless{}{-}} \FunctionTok{diag}\NormalTok{(matrix\_precision)}
+  
+
+\NormalTok{  recall[}\FunctionTok{is.na}\NormalTok{(recall)] }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{  precision[}\FunctionTok{is.na}\NormalTok{(precision)] }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(recall, precision))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# LPM predictions}
+\NormalTok{LPM\_predictions\_raw }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(binary\_lm, }\AttributeTok{newdata =}\NormalTok{ data, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{LPM\_predictions}\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(LPM\_predictions\_raw }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\CommentTok{\# Logit predictions}
+\NormalTok{logit\_predictions\_raw }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(binary\_logit, }\AttributeTok{newdata =}\NormalTok{ data, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{logit\_predictions}\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(logit\_predictions\_raw }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\CommentTok{\# Probit predictions}
+\NormalTok{probit\_predictions\_raw }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(binary\_probit, }\AttributeTok{newdata =}\NormalTok{ data, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{probit\_predictions}\OtherTok{\textless{}{-}}  \FunctionTok{ifelse}\NormalTok{(probit\_predictions\_raw }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\NormalTok{LPM\_accuracy    }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(LPM\_predictions}\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{logit\_accuracy  }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( logit\_predictions}\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{probit\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( probit\_predictions}\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+
+\NormalTok{confusion\_matrix\_LPM    }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed, }
+                                 \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(LPM\_predictions,}
+                                                    \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)))}
+\NormalTok{confusion\_matrix\_logit  }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed, }
+                                 \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(logit\_predictions,}
+                                                    \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)))}
+\NormalTok{confusion\_matrix\_probit }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed, }
+                                 \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(probit\_predictions,}
+                                                    \AttributeTok{levels=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Accuracy for Three Models}\tabularnewline
+\toprule\noalign{}
+& x \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& x \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Logit & 0.8754619 \\
+Probit & 0.8754619 \\
+LPM & 0.8754619 \\
+\end{longtable}
+
+The accuracy of all three models is 87.546\%.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{confusion\_matrix\_LPM}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual    0    1
+##      0    0  674
+##      1    0 4738
+\end{verbatim}
+
+These three models have identical confusion matrices, and from the
+results, we can observe the following:
+
+True Negatives (TN): 0 (the number of actual class 0 predicted as class
+0). The models did not correctly predict any instances that were
+actually class 0.
+
+False Positives (FP): 674 (the number of actual class 0 predicted as
+class 1). All instances that were actually class 0 were incorrectly
+predicted as class 1.
+
+False Negatives (FN): 0 (the number of actual class 1 predicted as class
+0). The models did not incorrectly predict any instances that were
+actually class 1 as class 0.
+
+True Positives (TP): 4738 (the number of actual class 1 predicted as
+class 1). The models correctly predicted all instances that were
+actually class 1.
+
+This performance of the models may indicate a significant issue with
+data imbalance, or a bias in feature recognition and learning within the
+models, leading them to recognize only one class.
+
+\hypertarget{question-h}{%
+\section{Question H}\label{question-h}}
+
+Optional: Repeat point (g) using one or more (at your discretion) of the
+following classification algorithms: Naïve Bayes Classifier, Linear
+Discriminant Analysis, Quadratic Discriminant Analysis, Decision trees,
+Random forests, K-Nearest Neighbours.
+
+\hypertarget{build-models}{%
+\subsection{Build Models}\label{build-models}}
+
+We start by constructing models using six distinct classification
+algorithms, and get all the output predictions.
+
+\hypertarget{nauxefve-bayes}{%
+\subsubsection{1. Naïve Bayes}\label{nauxefve-bayes}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Naïve Bayes}
+\NormalTok{data}\SpecialCharTok{$}\NormalTok{age\_square }\OtherTok{\textless{}{-}}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{age }\SpecialCharTok{**}\DecValTok{2}
+\NormalTok{nb\_model }\OtherTok{\textless{}{-}} \FunctionTok{naiveBayes}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+}\NormalTok{ age\_square, data)}
+\NormalTok{nb\_predictions\_raw }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(nb\_model, }\AttributeTok{newdata =}\NormalTok{ data, }\AttributeTok{type =} \StringTok{"raw"}\NormalTok{)}
+\NormalTok{nb\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(nb\_predictions\_raw[,}\DecValTok{2}\NormalTok{] }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{linear-discriminant-analysis}{%
+\subsubsection{2. Linear Discriminant
+Analysis}\label{linear-discriminant-analysis}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fit LDA Classifer }
+\NormalTok{lda\_model }\OtherTok{\textless{}{-}} \FunctionTok{lda}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{), data)}
+\NormalTok{lda\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(lda\_model, }\AttributeTok{newdata =}\NormalTok{ data)}\SpecialCharTok{$}\NormalTok{class}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{quadratic-discriminant-analysis}{%
+\subsubsection{3. Quadratic Discriminant
+Analysis}\label{quadratic-discriminant-analysis}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fit QDA Classifier}
+\NormalTok{qda\_model }\OtherTok{\textless{}{-}} \FunctionTok{qda}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{), data)}
+\NormalTok{qda\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(qda\_model, }\AttributeTok{newdata =}\NormalTok{ data)}\SpecialCharTok{$}\NormalTok{class}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{decision-tree}{%
+\subsubsection{4. Decision Tree}\label{decision-tree}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Decision Tree}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{decision\_tree\_model }\OtherTok{\textless{}{-}} \FunctionTok{rpart}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+}  \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ data)}
+\NormalTok{dt\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(decision\_tree\_model, }\AttributeTok{newdata =}\NormalTok{ data, }\AttributeTok{type =} \StringTok{"class"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{random-forests}{%
+\subsubsection{5. Random Forests}\label{random-forests}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Random forests}
+\NormalTok{rf\_model }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+}  \FunctionTok{I}\NormalTok{(age }\SpecialCharTok{\^{}} \DecValTok{2}\NormalTok{),}
+                         \AttributeTok{data=}\NormalTok{ data, }
+                         \AttributeTok{num.trees=} \DecValTok{100}\NormalTok{) }
+\NormalTok{rf\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_model , data)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{k-nearest-neighbours}{%
+\subsubsection{6. K-Nearest Neighbours}\label{k-nearest-neighbours}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# kNN Classifier}
+\NormalTok{data}\SpecialCharTok{$}\NormalTok{age\_squared }\OtherTok{\textless{}{-}}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{age }\SpecialCharTok{**} \DecValTok{2} 
+\NormalTok{scaled\_data }\OtherTok{\textless{}{-}} \FunctionTok{scale}\NormalTok{(data[, }\FunctionTok{c}\NormalTok{(}\StringTok{"age"}\NormalTok{, }\StringTok{"age\_squared"}\NormalTok{)])}
+\CommentTok{\# Define the number of neighbors}
+\NormalTok{k }\OtherTok{\textless{}{-}} \DecValTok{7}
+\NormalTok{knn\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ scaled\_data, }\AttributeTok{test =}\NormalTok{ scaled\_data, }
+                       \AttributeTok{cl =} \FunctionTok{as.factor}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{employed), }\AttributeTok{k =}\NormalTok{ k)}
+
+\CommentTok{\# Compute All Accuracies}
+\NormalTok{nb\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(nb\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{lda\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(lda\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{qda\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(qda\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{dt\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(dt\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{rf\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(rf\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\NormalTok{knn\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(knn\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{calculate-algorithm-accuracies}{%
+\subsection{Calculate Algorithm
+Accuracies}\label{calculate-algorithm-accuracies}}
+
+Next, we calculate the accuracy of each algorithm and put the results
+into a table for comparison.
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Accuracy for All Models}\tabularnewline
+\toprule\noalign{}
+Model & Accuracy \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Model & Accuracy \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+naiveBayes & 0.8754619 \\
+LDA Classifer & 0.8754619 \\
+QDA Classifier & 0.8610495 \\
+Decision Tree & 0.8754619 \\
+Random Forest & 0.8754619 \\
+KNN & 0.8754619 \\
+\end{longtable}
+
+\hypertarget{confusion-matrix-for-algorithms}{%
+\subsection{Confusion Matrix for
+algorithms}\label{confusion-matrix-for-algorithms}}
+
+We computed the confusion matrices for all algorithms and observed that,
+except for Quadratic Discriminant Analysis (QDA), the matrices for all
+algorithms (Linear Discriminant Analysis, Decision Trees, Random
+Forests, and K-Nearest Neighbours) were identical. To maintain brevity,
+we present the confusion matrix for Naive Bayes as representative for
+these four algorithms. Additionally, a separate confusion matrix for QDA
+is provided.
+
+\begin{itemize}
+\tightlist
+\item
+  Confusion Matrix for Naive Bayes (Representative for LDA, Decision
+  Tree, Random Forest, and KNN)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{confusion\_matrix\_nb }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed, }
+                             \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(nb\_predictions,}\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)))}
+\NormalTok{confusion\_matrix\_nb\_precision }\OtherTok{\textless{}{-}} \FunctionTok{normalize\_cm}\NormalTok{(confusion\_matrix\_nb)}
+\NormalTok{confusion\_matrix\_nb\_recall }\OtherTok{\textless{}{-}} \FunctionTok{normalize\_cm}\NormalTok{(confusion\_matrix\_nb,}\StringTok{\textquotesingle{}recall\textquotesingle{}}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(confusion\_matrix\_nb)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual    0    1
+##      0    0  674
+##      1    0 4738
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Confusion Matrix for QDA
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{confusion\_matrix\_qda }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed, }
+                              \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(qda\_predictions,}\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)))}
+\NormalTok{confusion\_matrix\_qda\_precision }\OtherTok{\textless{}{-}} \FunctionTok{normalize\_cm}\NormalTok{(confusion\_matrix\_qda)}
+\NormalTok{confusion\_matrix\_qda\_recall }\OtherTok{\textless{}{-}} \FunctionTok{normalize\_cm}\NormalTok{(confusion\_matrix\_qda,}\StringTok{\textquotesingle{}recall\textquotesingle{}}\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(confusion\_matrix\_qda)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual    0    1
+##      0   55  619
+##      1  133 4605
+\end{verbatim}
+
+By combining the accuracies and confusion matrices, we observe that the
+accuracies for all algorithms, except for the QDA classifier, are high
+and identical at approximately 87.55\%. Generally, an accuracy of
+87.55\% indicates a good rate of correctly predicted data. However, upon
+examining the confusion matrices for the five algorithms excluding QDA,
+we notice that both values in the first column are 0. This suggests that
+the models fail to classify any data points as class 0, predicting all
+instances as class 1, regardless of their actual class. This pattern
+implies that our models have not learned effectively, except for the QDA
+algorithm, which correctly classifies 55 data points as class 0.
+
+We recognize this problem as the problem of the original data set, as
+analyzed in Question a, 87.55\% of workers are in class 1 (which just
+equals to the accuracy of the models), which is imbalance. Therefore, we
+chose to use the undersampling technique to preprocess the data by
+removing samples from class 1.
+
+\hypertarget{improvment}{%
+\subsection{Improvment}\label{improvment}}
+
+Since the dataset is unbalanced, so we can used over sample to create
+some new rows and put the into Random Forest model to train it
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{clean\_data }\OtherTok{\textless{}{-}} \FunctionTok{na.omit}\NormalTok{(data)}
+
+
+\NormalTok{clean\_data }\OtherTok{\textless{}{-}}\NormalTok{ clean\_data }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{employed=}\FunctionTok{as.factor}\NormalTok{(employed)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{race=}\FunctionTok{as.factor}\NormalTok{(race))}
+
+\NormalTok{clean\_data }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(clean\_data, }\AttributeTok{select =} \SpecialCharTok{{-}}\NormalTok{unemployed)}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{122}\NormalTok{)  }
+\NormalTok{sample\_size }\OtherTok{\textless{}{-}} \FunctionTok{floor}\NormalTok{(}\FloatTok{0.70} \SpecialCharTok{*} \FunctionTok{nrow}\NormalTok{(clean\_data))  }
+\NormalTok{train\_index }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(clean\_data)), }\AttributeTok{size =}\NormalTok{ sample\_size)}
+\NormalTok{train\_data }\OtherTok{\textless{}{-}}\NormalTok{ clean\_data[train\_index, ]}
+\NormalTok{test\_data }\OtherTok{\textless{}{-}}\NormalTok{ clean\_data[}\SpecialCharTok{{-}}\NormalTok{train\_index, ]}
+
+
+\NormalTok{balanced\_data }\OtherTok{\textless{}{-}} \FunctionTok{ovun.sample}\NormalTok{(employed}\SpecialCharTok{\textasciitilde{}}\NormalTok{.,}\AttributeTok{data =}\NormalTok{ train\_data, }\AttributeTok{N=}\FunctionTok{nrow}\NormalTok{(train\_data), }\AttributeTok{p=}\FloatTok{0.5}\NormalTok{, }
+                                \AttributeTok{seed=}\DecValTok{1}\NormalTok{, }\AttributeTok{method=}\StringTok{"both"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{data}
+
+
+\NormalTok{rf\_model }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{. , }\AttributeTok{data=}\NormalTok{ balanced\_data, }\AttributeTok{num.trees=} \DecValTok{100}\NormalTok{) }
+
+\NormalTok{rf\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_model , balanced\_data)}
+\NormalTok{rf\_predictions\_test }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_model , test\_data)}
+
+\CommentTok{\# Accuracy}
+\NormalTok{rf\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(rf\_predictions }\SpecialCharTok{==}\NormalTok{ balanced\_data}\SpecialCharTok{$}\NormalTok{employed)}\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(balanced\_data)}
+\NormalTok{rf\_accuracy\_test }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(rf\_predictions\_test }\SpecialCharTok{==}\NormalTok{ test\_data}\SpecialCharTok{$}\NormalTok{employed)}\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(test\_data)}
+
+
+
+\NormalTok{confusion\_matrix\_rf }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =} \FunctionTok{factor}\NormalTok{(balanced\_data}\SpecialCharTok{$}\NormalTok{employed,}\AttributeTok{levels=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)), }
+                             \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(rf\_predictions,}\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)))}
+
+
+\NormalTok{confusion\_matrix\_rf\_test }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =}\NormalTok{ test\_data}\SpecialCharTok{$}\NormalTok{employed, }
+                             \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(rf\_predictions\_test,}\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Employed Fraction of Dataset}\tabularnewline
+\toprule\noalign{}
+& 0 & 1 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 0 & 1 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+train\_data & 401 & 2940 \\
+balanced\_data & 1726 & 1615 \\
+test\_data & 195 & 1237 \\
+\end{longtable}
+
+To address the imbalance in the dataset, we initially divided the data
+into a training set (70\%) and a test set (30\%). We then applied the
+oversampling method, specifically the ovun.sample method, to equalize
+the number of samples between class 0 and class 1. As indicated in the
+table, the balanced dataset now has an equal fraction of rows for both
+classes, which should enhance the model's analytical capabilities. We
+train a Random Forest model in the balanced dataset, and test the model
+in test dataset.
+
+\begin{longtable}[]{@{}lr@{}}
+\caption{Accuracy for train and Test}\tabularnewline
+\toprule\noalign{}
+DataSet & Accuracy \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+DataSet & Accuracy \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Balanced Set accuracy & 0.9916193 \\
+Test Set accuracy & 0.7856145 \\
+\end{longtable}
+
+From the table, it is evident that the accuracy on the training set is
+extremely high, reaching 99.16\%. However, the accuracy on the test set
+is 78.56\%, which is significantly lower than that of the training set
+and also lower than the initial model's 87.5\%. To better evaluate the
+model's fitting, we will continue to examine the results of the
+confusion matrix.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{confusion\_matrix\_rf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual    0    1
+##      0 1608    7
+##      1   21 1705
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{confusion\_matrix\_rf\_test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual    0    1
+##      0   50  145
+##      1  162 1075
+\end{verbatim}
+
+The confusion matrix reveals that the model excels on the training data
+but experiences a notable performance decline with the test data.
+However, compared to the initial model, it demonstrates improved fitting
+for class 0 data, aligning with our dataset's specific requirements. To
+enhance performance further, exploring methods to mitigate overfitting
+could be advantageous. This may include implementing more
+regularization, adjusting the model's complexity, or expanding the
+diversity of the training data to better generalize to new datasets.
+
+\end{document}

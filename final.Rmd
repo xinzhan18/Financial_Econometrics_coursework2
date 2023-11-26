@@ -53,7 +53,6 @@ library(lmtest)
 library(tree)
 library(knitr)
 library(rpart)
-library(ROSE)
 ```
 
 
@@ -62,11 +61,11 @@ library(ROSE)
 data <-  read_excel('employment_08_09.xlsx')
 ```
 
-
 # Question A
 What fraction of workers in the sample were employed in April 2009? Use your answer to compute a 95% confidence interval for the probability that a worker was employed in April 2009, conditional on being employed in April 2008. 
 
 ```{r}
+
 #sample size
 n <- nrow(data)
 
@@ -82,32 +81,36 @@ lowerinterval <- p - margin
 upperinterval <- p + margin
 
 cat(lowerinterval,upperinterval)
+
+
 ```
 The fraction of workers in the sample is  0.8754619. The interpretation is that, based on the sample data and statistical analysis, we are 95% confident that the true probability of a worker being employed in April 2009, given they were employed in April 2008, lies between 0.8666648 and 0.884259.
 
 
 # Question B
+
 Regress Employed on Age and Age**2 , using a linear probability model.
 
-```{r,comment=''}
+```{r}
 binary_lm <- lm(employed ~ age + I(age ^ 2), data = data)
 summary(binary_lm)
-coefest_df <- coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
-
-
+coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
 ```
 
 ## i)
 Based on this regression, was the age a statistically significant determinant of employment in April 2009. 
 \vspace{1em}
 
+
 The positive coefficient for the 'Age' variable suggests that, on average, the probability of being employed increases with age. The coefficient is statistically significant with a p-value < 0.001, so there is a statistically significant relationship between age and employment in April 2009. Although it is statistically significant, the overall fit of the model (Multiple R-squared and Adjusted R-squared) indicates that age explains a very small proportion of the variability in employment status. In this case, only about 1.966% of the variability in employment status is explained by age and its squared term. The low p-value (< 2.2e-16) indicates that at least one of the predictors (age or age^2) is related to the dependent variable.
+
 
 ## ii)
 Is there evidence of a nonlinear effect of age on probability of being employed? 
 \vspace{1em}
 
 Yes, there is evidence of a nonlinear effect of age on the probability of being employed based on the regression results. The negative coefficient for the squared term 'Age^2' is also statistically significant (p-value < 0.001). This suggests that as age increases, the positive effect of age on the probability of being employed diminishes, indicating a curvature or nonlinear pattern in the relationship.
+
 
 ## iii)
 Compute the predicted probability of employment for a 20-year-old worker, a 40year-old worker, and a 60-year-old worker. 
@@ -173,6 +176,7 @@ The predicted probability of employment for a 40-year-old worker is approximatel
 The predicted probability of employment for a 60-year-old worker is approximately 83.16%.
 
 
+
 # Question D
 Repeat (b) using a logit regression.
 ```{r}
@@ -213,8 +217,8 @@ The predicted probability of employment for a 60-year-old worker is approximatel
 
 
 # Question E
-Are there important differences in your answers to (b)-(d)? Explain.
 
+Are there important differences in your answers to (b)-(d)? Explain.
 \vspace{1em}
 
 
@@ -238,7 +242,7 @@ summary(binary_lpm_modified)
 coeftest(binary_lpm_modified, vcov = vcovHC(binary_lpm_modified), type = "HC1")
 ```
 
-## i) 
+## (i) 
 
 By adding those covariates to the linear probability model regression of point (b), investigate whether the conclusions on the effect of Age on employment from (b) are affected by omitted variable bias.
 \vspace{1em}
@@ -256,7 +260,7 @@ Similarly, the variable 'educ_lths,' indicating whether a worker's highest level
 Moreover, the observed decrease in the magnitude (ignoring sign) of the coefficients for age and age^2 further validates the presence of downward bias resulting from omitted variables.
 
 
-## ii)
+## (ii)
 Use the regression results to discuss the characteristics of workers who were hurt the most by the 2008 financial crisis.
 \vspace{1em}
 
@@ -266,6 +270,7 @@ From the regression results, I can conclude that those workers who are aged, bla
 
 # Question G
 Use the models in (b)-(d) to assess the in-sample accuracy of the classification. What is the proportion of correctly assigned classes?
+
 
 ```{r}
 # Create a function to calucate the precision and recall
@@ -316,6 +321,13 @@ LPM_accuracy    <- sum(LPM_predictions== data$employed) / nrow(data)
 logit_accuracy  <- sum( logit_predictions== data$employed) / nrow(data)
 probit_accuracy <- sum( probit_predictions== data$employed) / nrow(data)
 
+all_accuracies <- c(logit_accuracy, probit_accuracy, LPM_accuracy)
+names(all_accuracies) <- c("Logit", "Probit", "LPM")
+kable(all_accuracies, caption = "Accuracy for Three Models")
+```
+The accuracies of three models are same.  
+
+```{r}
 confusion_matrix_LPM    <- table(Actual = data$employed, 
                                  Predicted = factor(LPM_predictions,
                                                     levels = c(0, 1)))
@@ -325,21 +337,9 @@ confusion_matrix_logit  <- table(Actual = data$employed,
 confusion_matrix_probit <- table(Actual = data$employed, 
                                  Predicted = factor(probit_predictions,
                                                     levels=c(0,1)))
-```
- 
-
-
-```{r,echo=FALSE}
-all_accuracies <- c(logit_accuracy, probit_accuracy, LPM_accuracy)
-names(all_accuracies) <- c("Logit", "Probit", "LPM")
-kable(all_accuracies, caption = "Accuracy for Three Models")
-```
-The accuracy of all three models is 87.546%.
-
-
-```{r}
 confusion_matrix_LPM
 ```
+
 
 These three models have identical confusion matrices, and from the results, we can observe the following:
 
@@ -355,53 +355,190 @@ This performance of the models may indicate a significant issue with data imbala
 
 
 
+```{r}
+confusion_matrix_LPM_precision <- normalize_cm(confusion_matrix_LPM)
+confusion_matrix_logit_precision <- normalize_cm(confusion_matrix_logit)
+confusion_matrix_probit_precision <- normalize_cm(confusion_matrix_probit)
+
+confusion_matrix_LPM_recall <- normalize_cm(confusion_matrix_LPM,'recall')
+confusion_matrix_logit_recall <- normalize_cm(confusion_matrix_logit,'recall')
+confusion_matrix_probit_recall <- normalize_cm(confusion_matrix_probit,'recall')
+
+values_LPM <- extract_values(confusion_matrix_LPM_recall,
+                             confusion_matrix_LPM_precision)
+values_Logit <- extract_values(confusion_matrix_logit_recall,
+                               confusion_matrix_logit_precision)
+values_Probit <- extract_values(confusion_matrix_probit_recall,
+                                confusion_matrix_probit_precision)
+
+performance_table <- data.frame(
+  Model = rep(c("LPM", "Logit", "Probit"), each = 2),
+  Class = rep(c("Class 0", "Class 1"), 3),
+  
+  Recall = c(values_LPM[, "recall"], 
+             values_Logit[, "recall"], 
+             values_Probit[, "recall"]),
+  
+  Precision = c(values_LPM[, "precision"],
+                values_Logit[, "precision"], 
+                values_Probit[, "precision"])
+)
+
+
+kable(performance_table, caption = "Recall and Precision for Three Models")
+
+```
+
+
+The table shows that the LPM, Logit, and Probit models have identical Recall and Precision values.
+
+For Class 0:
+
+Recall is 0, indicating that none of the actual Class 0 samples were correctly predicted as Class 0 by the models. This suggests poor performance of the models in identifying Class 0.
+Precision is 0, meaning that none of the samples predicted as Class 0 were actually Class 0.
+
+For Class 1:
+
+Recall is 1, meaning all the samples that are actually Class 1 were correctly predicted as Class 1 by the models. This indicates good performance of the models in identifying Class 1.
+Precision is approximately 0.8754619, indicating that about 87.55% of the samples predicted as Class 1 are actually Class 1.
+
+
+Overall,
+
+These three models perform well in predicting Class 1 (Class 1), exhibiting high Recall and fairly high Precision.
+However, their performance in predicting Class 0 (Class 0) is poor, with both Recall and Precision being 0. This might suggest a tendency of these models to predict most or all samples as Class 1, overlooking Class 0.
+This phenomenon is likely due to data imbalance (87.5% of the samples are Class 1), where Class 1 samples might significantly outnumber those of Class 0, leading to a bias in the models towards Class 1 during training.
+The models might be overfitting to the features of Class 1, leading to a neglect of Class 0 in predictions.
+
+To improve model performance, measures such as resampling to balance the data, adjusting model complexity to reduce overfitting, or introducing more distinctive features might be necessary. 
+
+
+
 # Question H
+
 Optional: Repeat point (g) using one or more (at your discretion) of the following classification algorithms: Naïve Bayes Classifier, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Decision trees, Random forests, K-Nearest Neighbours.
 
 ## Build Models
-We start by constructing models using six distinct classification algorithms, and get all the output predictions.
 
-### 1. Naïve Bayes
+
 ```{r}
 # Naïve Bayes
 data$age_square <- data$age **2
 nb_model <- naiveBayes(as.factor(employed) ~ age + age_square, data)
 nb_predictions_raw <- predict(nb_model, newdata = data, type = "raw")
 nb_predictions <- ifelse(nb_predictions_raw[,2] > 0.5, 1, 0)
-```
+nb_accuracy <- sum(nb_predictions == data$employed) / nrow(data)
 
-### 2. Linear Discriminant Analysis
+confusion_matrix_nb <- table(Actual = data$employed, 
+                             Predicted = factor(nb_predictions,levels = c(0, 1)))
+confusion_matrix_nb_precision <- normalize_cm(confusion_matrix_nb)
+confusion_matrix_nb_recall <- normalize_cm(confusion_matrix_nb,'recall')
+
+cat(paste('model accuracy is',nb_accuracy))
+print(confusion_matrix_nb)
+```
+The accuracy of Navie Bayes is 87.54%. The confusion matrix is same as before.
+
+
+
+Linear Discriminant Analysis
+
 ```{r}
 # Fit LDA Classifer 
 lda_model <- lda(as.factor(employed) ~ age + I(age ^ 2), data)
 lda_predictions <- predict(lda_model, newdata = data)$class
+lda_accuracy <- sum(lda_predictions == data$employed) / nrow(data)
+
+confusion_matrix_lda  <- table(Actual = data$employed, 
+                               Predicted = factor(lda_predictions,levels = c(0, 1)))
+confusion_matrix_lda_precision <- normalize_cm(confusion_matrix_lda)
+confusion_matrix_lda_recall <- normalize_cm(confusion_matrix_lda,'recall')
+print(lda_accuracy)
+print(confusion_matrix_lda)
 ```
  
-### 3. Quadratic Discriminant Analysis
+The accuracy of Linear Discriminant Analysis is 87.54%. The confusion matrix is same as before.
+ 
+ 
+ 
+Quadratic Discriminant Analysis
+
 ```{r}
 # Fit QDA Classifier
 qda_model <- qda(as.factor(employed) ~ age + I(age ^ 2), data)
 qda_predictions <- predict(qda_model, newdata = data)$class
-```
+qda_accuracy  <- sum(qda_predictions == data$employed) / nrow(data)
 
-### 4. Decision Tree
+confusion_matrix_qda <- table(Actual = data$employed, 
+                              Predicted = factor(qda_predictions,levels = c(0, 1)))
+confusion_matrix_qda_precision <- normalize_cm(confusion_matrix_qda)
+confusion_matrix_qda_recall <- normalize_cm(confusion_matrix_qda,'recall')
+
+print(qda_accuracy)
+print(confusion_matrix_qda)
+
+```
+The accuracy of Quadratic Discriminant Analysis is 86.10%. 
+
+
+
+Decision trees
+
 ```{r}
 # Decision Tree
-set.seed(123)
+set.seed(123) # Setting a seed for reproducibility
+
 decision_tree_model <- rpart(as.factor(employed) ~ age +  I(age ^ 2), data = data)
 dt_predictions <- predict(decision_tree_model, newdata = data, type = "class")
+
+# Accuracy
+dt_accuracy <- sum(dt_predictions == data$employed) /  nrow(data)
+
+confusion_matrix_tree <- table(Actual = data$employed, 
+                               Predicted = factor(dt_predictions,levels = c(0, 1)))
+confusion_matrix_tree_precision <- normalize_cm(confusion_matrix_tree)
+confusion_matrix_tree_recall <- normalize_cm(confusion_matrix_tree,'recall')
+print(dt_accuracy)
+print(confusion_matrix_tree)
 ```
 
-### 5. Random Forests
+
+The accuracy of Decision Tree is 87.54%. The confusion matrix is same as before.
+
+
+
+
+Random forests
+
+
 ```{r}
+
 # Random forests
 rf_model <- randomForest(as.factor(employed) ~ age +  I(age ^ 2),
                          data= data, 
                          num.trees= 100) 
 rf_predictions <- predict(rf_model , data)
+
+# Accuracy
+rf_accuracy <- mean(rf_predictions == data$employed)
+
+confusion_matrix_rf <- table(Actual = data$employed, 
+                             Predicted = factor(rf_predictions,levels = c(0, 1)))
+confusion_matrix_rf_precision <- normalize_cm(confusion_matrix_rf)
+confusion_matrix_rf_recall <- normalize_cm(confusion_matrix_rf,'recall')
+print(rf_accuracy)
+print(confusion_matrix_rf)
+
 ```
 
-### 6. K-Nearest Neighbours
+
+The accuracy of Random forests is 87.54%. The confusion matrix is same as before.
+
+
+
+K-Nearest Neighbours
+
+
 ```{r}
 # kNN Classifier
 data$age_squared <- data$age ** 2 
@@ -410,25 +547,26 @@ scaled_data <- scale(data[, c("age", "age_squared")])
 k <- 7
 knn_predictions <- knn(train = scaled_data, test = scaled_data, 
                        cl = as.factor(data$employed), k = k)
+knn_accuracy  <- sum(knn_predictions == data$employed) / nrow(data)
 
-# Compute All Accuracies
-nb_accuracy <- sum(nb_predictions == data$employed) / nrow(data)
-lda_accuracy <- sum(lda_predictions == data$employed) / nrow(data)
-qda_accuracy <- sum(qda_predictions == data$employed) / nrow(data)
-dt_accuracy <- sum(dt_predictions == data$employed) / nrow(data)
-rf_accuracy <- sum(rf_predictions == data$employed) / nrow(data)
-knn_accuracy <- sum(knn_predictions == data$employed) / nrow(data)
+confusion_matrix_knn <- table(Actual = data$employed, 
+                              Predicted = factor(knn_predictions,levels = c(0, 1)))
+confusion_matrix_knn_precision <- normalize_cm(confusion_matrix_knn)
+confusion_matrix_knn_recall <- normalize_cm(confusion_matrix_knn,'recall')
+print(knn_accuracy)
+print(confusion_matrix_knn)
 ```
 
+The accuracy of K-Nearest Neighbours is 87.54%. The confusion matrix is same as before.
 
-## Calculate Algorithm Accuracies
-Next, we calculate the accuracy of each algorithm and put the results into a table for comparison.
-```{r,echo = FALSE}
 
-# Put all results into a table
+## Horizontal Comparison of Accuracy
+
+```{r}
+
 comparison_table <- data.frame(
   Model = c("naiveBayes", 
-            "LDA Classifer", 
+            " LDA Classifer", 
             "QDA Classifier",
             "Decision Tree",
             "Random Forest",
@@ -443,40 +581,110 @@ comparison_table <- data.frame(
 )
 
 kable(comparison_table, caption = "Accuracy for All Models")
-```
-
-
-## Confusion Matrix for algorithms
-We computed the confusion matrices for all algorithms and observed that, except for Quadratic Discriminant Analysis (QDA), the matrices for all algorithms (Linear Discriminant Analysis, Decision Trees, Random Forests, and K-Nearest Neighbours) were identical. To maintain brevity, we present the confusion matrix for Naive Bayes as representative for these four algorithms. Additionally, a separate confusion matrix for QDA is provided.
-
-* Confusion Matrix for Naive Bayes (Representative for LDA, Decision Tree, Random Forest, and KNN)
-```{R}
-confusion_matrix_nb <- table(Actual = data$employed, 
-                             Predicted = factor(nb_predictions,levels = c(0, 1)))
-confusion_matrix_nb_precision <- normalize_cm(confusion_matrix_nb)
-confusion_matrix_nb_recall <- normalize_cm(confusion_matrix_nb,'recall')
-
-print(confusion_matrix_nb)
-```
-
-* Confusion Matrix for QDA
-```{R}
-confusion_matrix_qda <- table(Actual = data$employed, 
-                              Predicted = factor(qda_predictions,levels = c(0, 1)))
-confusion_matrix_qda_precision <- normalize_cm(confusion_matrix_qda)
-confusion_matrix_qda_recall <- normalize_cm(confusion_matrix_qda,'recall')
-
-print(confusion_matrix_qda)
 
 ```
-By combining the accuracies and confusion matrices, we observe that the accuracies for all algorithms, except for the QDA classifier, are high and identical at approximately 87.55%. Generally, an accuracy of 87.55% indicates a good rate of correctly predicted data. However, upon examining the confusion matrices for the five algorithms excluding QDA, we notice that both values in the first column are 0. This suggests that the models fail to classify any data points as class 0, predicting all instances as class 1, regardless of their actual class. This pattern implies that our models have not learned effectively, except for the QDA algorithm, which correctly classifies 55 data points as class 0.
 
-We recognize this problem as the problem of the original data set, as analyzed in Question a, 87.55% of workers are in class 1 (which just equals to the accuracy of the models), which is imbalance. Therefore, we chose to use the undersampling technique to preprocess the data by removing samples from class 1.
+This table showcases a comparison of accuracy rates for different machine learning models. Accuracy, a measure of a classification model's performance, represents the proportion of correct predictions (both positive and negative classes). 
 
-## Improvment
+For models such as NaiveBayes, LDA Classifier, Decision Tree, Random Forest, and KNN, the accuracy stands at 0.8754619 (approximately 87.55%). High accuracy rates for these models suggest good performance on the given task.
 
-Since the dataset is unbalanced, so we can used over sample to create some new rows and put the into Random Forest model to train it
+For the QDA Classifier, the accuracy is slightly lower, at 0.8610495 (about 86.10%), marginally below the other models.
+
+Comprehensive Analysis:
+
+The accuracy rates of these models are very close, indicating minimal performance differences between them on this specific task. The slightly lower accuracy of the QDA Classifier might be attributed to the model's characteristics or the features of the dataset.
+High accuracy rates demonstrate the models' overall precise predictions, but this doesn't necessarily mean that the models perform equally well across all types of predictions. For instance, a model might predict more accurately in one category than another.
+To better evaluate the results, a comparison of their recall and precision is necessary.
+
+
+
+## Horizontal Comparison of Recall and Precision
+
+
 ```{r}
+
+
+values_nb <- extract_values(confusion_matrix_nb_recall,confusion_matrix_nb_precision)
+values_lda <- extract_values(confusion_matrix_lda_recall,confusion_matrix_lda_precision)
+values_qda <- extract_values(confusion_matrix_qda_recall,confusion_matrix_qda_precision)
+values_tree <- extract_values(confusion_matrix_tree_recall,confusion_matrix_tree_precision)
+values_rf <- extract_values(confusion_matrix_rf_recall,confusion_matrix_rf_precision)
+values_knn <- extract_values(confusion_matrix_knn_recall,confusion_matrix_knn_precision)
+
+
+performance_table <- data.frame(
+  Model = rep(c("NaiveBayes", 
+                "LDA", 
+                "QDA",
+                "DecisiomTree",
+                "RandomForest",
+                "KNN"), each = 2),
+  
+  Class = rep(c("Class 0", "Class 1"), 3),
+  
+  Recall = c(values_nb[, "recall"],
+             values_lda[, "recall"],
+             values_qda[, "recall"],
+             values_tree[,"recall"],
+             values_rf[,"recall"],
+             values_knn[,"recall"]),
+  
+  Precision = c(values_nb[, "precision"], 
+                values_lda[, "precision"],
+                values_qda[, "precision"],
+                values_tree[,"precision"],
+                values_rf[,"precision"],
+                values_knn[,"precision"])
+)
+
+
+
+kable(performance_table, caption = "Recall and Precision for All Models")
+
+
+```
+
+This table presents the Recall and Precision of multiple models for two categories (Class 0 and Class 1). For the majority of the models (naiveBayes, LDA, Decision Tree, RandomForest, KNN):
+
+
+Class 0:
+
+Both Recall and Precision are 0. This indicates that these models failed to correctly predict any sample that actually belongs to Class 0, showing poor performance.
+
+Class 1:
+
+Recall is 1, and Precision is 0.8754619. This means these models successfully predicted all samples that actually belong to Class 1, but of all the samples predicted as Class 1, approximately 87.55% are indeed Class 1. These models excel in predicting Class 1 but completely fail to predict Class 0.
+
+
+For QDA:
+
+Class 0:
+
+Recall is 0.0816024, and Precision is 0.2925532. This suggests that QDA has some capability in predicting Class 0, albeit limited.
+
+Class 1:
+
+Recall is 0.9719291, and Precision is 0.8815084. This indicates that QDA is highly effective and relatively precise in predicting Class 1. QDA shows a more balanced performance in predicting both categories compared to other models.
+
+
+Summary:
+
+Most models demonstrate a significant preference for Class 1, effectively predicting Class 1 but completely failing in predicting Class 0. This performance may be related to data imbalance, where Class 1 samples possibly far outnumber Class 0.
+QDA shows a more balanced predictive capability for both categories, though it's relatively weaker in Class 0 but still significantly better than other models.
+
+Despite the high accuracy of these models (about 87.55%), primarily driven by their strong performance in Class 1, high accuracy does not necessarily mean good predictive ability across all categories, especially in cases of data imbalance.
+Relying solely on accuracy can be misleading when dealing with imbalanced data. Hence, Recall and Precision become important complementary metrics.
+
+To enhance model performance in Class 0, specific strategies might be required, such as resampling, using different evaluation metrics (like the F1 score), or trying different models and feature engineering methods.
+
+
+## Improvement
+
+```{r}
+#install.packages("ROSE")
+#install.packages("DMwR")
+library(ROSE)
+
 clean_data <- na.omit(data)
 
 
@@ -486,16 +694,20 @@ clean_data <- clean_data %>%
 
 clean_data <- subset(clean_data, select = -unemployed)
 
-set.seed(122)  
-sample_size <- floor(0.70 * nrow(clean_data))  
+set.seed(123)  # 设置种子以确保结果可重复
+sample_size <- floor(0.70 * nrow(clean_data))  # 计算70%的数据量
 train_index <- sample(seq_len(nrow(clean_data)), size = sample_size)
 train_data <- clean_data[train_index, ]
 test_data <- clean_data[-train_index, ]
 
+majority <- train_data[train_data$employed == 1, ]
+minority <- train_data[train_data$employed == 0, ]
 
-balanced_data <- ovun.sample(employed~.,data = train_data, N=nrow(train_data), p=0.5, 
-                                seed=1, method="both")$data
+balanced_data <- ovun.sample(employed~.,data = train_data,
+                            p=0.5,seed=1,method = "over")$data
 
+# 检查平衡后的类别分布
+table(balanced_data$employed)
 
 rf_model <- randomForest(as.factor(employed) ~. , data= balanced_data, num.trees= 100) 
 
@@ -503,56 +715,28 @@ rf_predictions <- predict(rf_model , balanced_data)
 rf_predictions_test <- predict(rf_model , test_data)
 
 # Accuracy
+
 rf_accuracy <- sum(rf_predictions == balanced_data$employed)/ nrow(balanced_data)
 rf_accuracy_test <- sum(rf_predictions_test == test_data$employed)/ nrow(test_data)
 
+rf_accuracy
+rf_accuracy_test
 
 
 confusion_matrix_rf <- table(Actual = factor(balanced_data$employed,levels=c(0,1)), 
                              Predicted = factor(rf_predictions,levels = c(0, 1)))
 
+confusion_matrix_rf_precision <- normalize_cm(confusion_matrix_rf)
+confusion_matrix_rf_recall <- normalize_cm(confusion_matrix_rf,'recall')
+
+confusion_matrix_rf
 
 confusion_matrix_rf_test <- table(Actual = test_data$employed, 
                              Predicted = factor(rf_predictions_test,levels = c(0, 1)))
+confusion_matrix_rf_test_precision <- normalize_cm(confusion_matrix_rf_test)
+confusion_matrix_rf_test_recall <- normalize_cm(confusion_matrix_rf_test,'recall')
 
-```
-
-```{r,echo=FALSE}
-
-train_df <- as.data.frame(matrix(table(train_data$employed), nrow = 1))
-balanced_df <- as.data.frame(matrix(table(balanced_data$employed), nrow = 1))
-test_df <- as.data.frame(matrix(table(test_data$employed), nrow = 1))
-
-colnames(train_df) <- c("0", "1")
-colnames(balanced_df) <- c("0", "1")
-colnames(test_df) <- c("0", "1")
-
-combined_df <- rbind( "train_data" = train_df,"balanced_data" = balanced_df,'test_data'=test_df)
-knitr::kable(combined_df, caption = "Employed Fraction of Dataset")
-
-```
-
-To address the imbalance in the dataset, we initially divided the data into a training set (70%) and a test set (30%). We then applied the oversampling method, specifically the ovun.sample method, to equalize the number of samples between class 0 and class 1. As indicated in the table, the balanced dataset now has an equal fraction of rows for both classes, which should enhance the model's analytical capabilities. We train a Random Forest model in the balanced dataset, and test the model in test dataset.
-
-
-```{r,echo=FALSE}
-# Put all results into a table
-comparison_table <- data.frame(
-  DataSet = c("Balanced Set accuracy", 
-            "Test Set accuracy"),
-  
-  Accuracy = c(rf_accuracy, 
-               rf_accuracy_test)
-)
-
-kable(comparison_table, caption = "Accuracy for train and Test")
-
-```
-From the table, it is evident that the accuracy on the training set is extremely high, reaching 99.16%. However, the accuracy on the test set is 78.56%, which is significantly lower than that of the training set and also lower than the initial model's 87.5%. To better evaluate the model's fitting, we will continue to examine the results of the confusion matrix.
-
-```{r}
-confusion_matrix_rf
 confusion_matrix_rf_test
-```
-The confusion matrix reveals that the model excels on the training data but experiences a notable performance decline with the test data. However, compared to the initial model, it demonstrates improved fitting for class 0 data, aligning with our dataset's specific requirements. To enhance performance further, exploring methods to mitigate overfitting could be advantageous. This may include implementing more regularization, adjusting the model's complexity, or expanding the diversity of the training data to better generalize to new datasets.
 
+importance(rf_model)
+```

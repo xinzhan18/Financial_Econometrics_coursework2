@@ -1,0 +1,274 @@
+---
+title: |
+  | Financial Econometrics in R/Python
+  | Assignment TWO
+author: |
+  | Group 14
+  | The Business School, Imperial College London
+  | Hao Li, 02484794
+  | Chenzhao Jia, 02523776
+  | Lurui Xu, 02438603
+  | Yulin Tian, 02427350
+  | Ziang Zhao, 02487560
+date: "16-11-2023"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: 
+    
+---
+\newpage
+\tableofcontents
+\newpage
+
+```{r setup, include=FALSE}
+rm(list=ls())
+# Load required libraries
+#install.packages("rpart.plot")
+#install.packages(c("e1071", "MASS", "class"))
+#install.packages("tree")
+#install.packages("randomForest")
+#install.packages("margins")
+library(margins) # For the marginal effects of Logit and Probit
+library(randomForest)
+library(e1071) # For Naive Bayesian Classifier
+library(MASS) # Logit, Probit, LDA, QDA
+library(class) # for k-NN
+library(dplyr)
+library("readxl")
+library(lmtest)
+library(sandwich)
+library(tree)
+library(rpart)
+```
+
+```{r Load data}
+# Load data
+employ_data <- read_xlsx("employment_08_09.xlsx")
+```
+
+```{r Question a)}
+# What fraction of workers in the sample were employed in April 2009? Use your answer to compute a 95% confidence interval for the probability that a worker was employed in April 2009, conditional on being employed in April 2008.
+employed_2009 <- nrow(employ_data[employ_data$employed == 1, ])
+sample_size <- nrow(employ_data) 
+employed_frac <- employed_2009 / sample_size
+cat(employed_frac * 100, "%")
+```
+The fraction of workers in the sample being employed in April 2009 is 87.54619%. 
+
+```{r Question a}
+# Conditional probability 
+## MARK
+confidence_level <- 0.95
+alpha <- 1 - confidence_level
+se <- sqrt((employed_frac * (1 - employed_frac)) / sample_size)
+critical_value <- qnorm(1 - alpha/2)
+
+lower_bound <- employed_frac - critical_value * se
+upper_bound <- employed_frac + critical_value * se
+
+lower_bound
+upper_bound
+```
+The 95% confidence interval is [0.8666648, 0.884259].
+
+```{r Question b)}
+# Regress Employed on Age and Age^2 , using a linear probability model.
+## (i) Based on this regression, was the age a statistically significant determinant of employment in April 2009.
+
+# remove missing values
+employ_data <- na.omit(employ_data)
+## (ii) 
+# Make predictions with the linear probability model (LPM)
+binary_lpm <- lm(employed ~ age + I(age^2), employ_data)
+#summary(binary_lpm)
+coeftest(binary_lpm, vcov = vcovHC(binary_lpm), type = "HC1")
+
+## (iii) Compute the predicted probability of employment for a 20-year-old worker, a 40year-old worker, and a 60-year-old worker.
+
+lpm_20_prediction <- predict(binary_lpm, employ_data[employ_data$age == 20, ], type = "response")
+lpm_40_prediction <- predict(binary_lpm, employ_data[employ_data$age == 40, ], type = "response")
+lpm_60_prediction <- predict(binary_lpm, employ_data[employ_data$age == 60, ], type = "response")
+```
+(i) Yes. Based on the regression, the age was a statistically significant determinant of employment in 
+April 2009. The **p-value** of the *age* is much more smaller than 0.001, so we can reject the null
+hypothesis that the coefficient of *age* is zero at 0.1% significance level.
+
+(ii) Yes. There is evidence of a nonlinear effect of age on probability of being employed because
+the $*age^2*$ was a statistically significant determinant based on our regression. The **p-value** of the $*age^2*$ is much more smaller than 0.001, so we can reject the null hypothesis that the coefficient of $*age^2*$ is zero at 0.1% significance level. The negative coefficient for *age^2* (-3.159e-04) indicates that as age continues to increase, the positive effect of age on employment begins to decrease. The increase in the probability of being employed slows down and eventually may start to decrease after a certain age. 
+
+(iii) 
+The predicted probability of employment for a 20-year-old worker is 0.7422841. This indicates that a 20-year-old worker who was employed in April 2008 has a probability of 0.7422841 of remaining employed in April 2009. Similarly, the corresponding probabilities for the 40-year-old and 60-year-old employee cohorts are 0.9157685 and 0.8279458, respectively. 
+So we can conclude that the group of 20-year-old worker was more likely to lose their jobs than others during the 2008 global financial crisis.
+
+
+```{r Question c)}
+# Repeat (b) using a probit regression.
+
+binary_probit <- glm(employed ~ age + I(age^2), family = binomial(link = "probit"), employ_data)
+summary(binary_probit)
+coeftest(binary_probit, vcov = vcovHC(binary_probit), type = "HC1")
+
+probit_20_prediction <- predict(binary_probit, employ_data[employ_data$age == 20, ], type = "response")
+probit_40_prediction <- predict(binary_probit, employ_data[employ_data$age == 40, ], type = "response")
+probit_60_prediction <- predict(binary_probit, employ_data[employ_data$age == 60, ], type = "response")
+```
+(i) Yes. Based on the regression, the age was a statistically significant determinant of employment in 
+April 2009. The **p-value** of the *age* is much more smaller than 0.001, so we can reject the null
+hypothesis that the coefficient of *age* is zero at 0.1% significance level.
+
+(ii) Yes. There is evidence of a nonlinear effect of age on probability of being employed because
+the $*age^2*$ was a statistically significant determinant based on our regression. The **p-value** of the $*age^2*$ is much more smaller than 0.001, so we can reject the null hypothesis that the coefficient of $*age^2*$ is zero at 0.1% significance level.
+
+(iii) 
+The predicted probability of employment for a 20-year-old worker is 0.7327351 This indicates that a 20-year-old worker who was employed in April 2008 has a probability of 0.7327351 of remaining employed in April 2009. Similarly, the corresponding probabilities for the 40-year-old and 60-year-old employee cohorts are 0.9108339 and 0.8363122, respectively. 
+So we can conclude that the group of 20-year-old worker was more likely to lose their jobs than others during the 2008 global financial crisis.
+
+```{r Question d)}
+binary_logit <- glm(employed ~ age + I(age^2), family = binomial(link = "logit"), employ_data)
+#summary(binary_logit)
+coeftest(binary_logit, vcov = vcovHC(binary_logit), type = "HC1")
+
+logit_20_prediction <- predict(binary_logit, employ_data[employ_data$age == 20, ], type = "response")
+logit_40_prediction <- predict(binary_logit, employ_data[employ_data$age == 40, ], type = "response")
+logit_60_prediction <- predict(binary_logit, employ_data[employ_data$age == 60, ], type = "response")
+
+```
+ (i) Yes. Based on the regression, the age was a statistically significant determinant of employment in 
+April 2009. The **p-value** of the *age* is much more smaller than 0.001, so we can reject the null
+hypothesis that the coefficient of *age* is zero at 0.1% significance level.
+
+(ii) Yes. There is evidence of a nonlinear effect of age on probability of being employed because
+the $*age^2*$ was a statistically significant determinant based on our regression. The **p-value** of the $*age^2*$ is much more smaller than 0.001, so we can reject the null hypothesis that the coefficient of $*age^2*$ is zero at 0.1% significance level.
+
+(iii) 
+The predicted probability of employment for a 20-year-old worker is 0.7285524 This indicates that a 20-year-old worker who was employed in April 2008 has a probability of 0.7285524 of remaining employed in April 2009. Similarly, the corresponding probabilities for the 40-year-old and 60-year-old employee cohorts are 0.910589 and 0.8358088, respectively. 
+So we can conclude that the group of 20-year-old worker was more likely to lose their jobs than others during the 2008 global financial crisis.
+ 
+e) Are there important differences in your answers to (b)-(d)? Explain.
+The
+The results for the probit and logit models are essentially identical. The predicted probability of employmnet based on linear probability model are approximately 1% larger than the probit/logit estimates for individuals with age 20 and 40. But the age effects for the probit, logit, and linear probability models exhibit the same pattern across ages.
+
+1.Coefficients and Significance: All three models show that age is a statistically significant determinant of employment, with a nonlinear effect. The signs and significance of the coefficients are consistent across the models.
+2.Model Fit: The AIC values for probit and logit are close, suggesting similar fits. The R-squared value for the linear model is low, indicating limited explanatory power.
+The linear model yields probabilities outside the [0,1] range, which is not ideal for a binary outcome. Probit and logit models provide probabilities within this range, more appropriate for binary outcomes
+3.Coefficient Interpretation: In the linear model, coefficients represent direct changes in probability. In probit and logit models, coefficients are related to changes in the z-score (probit) and log odds (logit).
+ 
+```{r Question (f)} 
+# MARK
+# (f) The data set includes variables measuring the workers’ educational attainment, sex, race, marital status, region of the country, and weekly earnings in April 2008.
+lm <- lm(employed ~ age + I(age^2) + female + married + race + ne_states 
+         + so_states + ce_states + educ_lths + educ_hs 
+         + educ_somecol + educ_aa + educ_bac + earnwke, na.omit(employ_data))
+#summary(lm)
+coeftest(lm, vcov = vcovHC(lm), type = "HC1")
+
+```
+Question (f) 
+## MARK
+(i)By adding those covariates to the linear probability model regression of point (b), investigate whether the conclusions on the effect of Age on employment from (b) are affected by omitted variable bias.
+
+The analysis examined the impact of age on employment status using two linear regression models. The first model (b) focused solely on *age*and *age^2* as predictors, revealing a significant positive relationship between age and employment (Estimate = 0.027463，**p-value** < 2.030e-15).
+
+For the full model, despite the inclusion of these covariates, the effect of *age* on employment remained significant and positive (Estimate = 0.024591，p-value < 6.234e-12). This suggests that the initial conclusion regarding the positive impact of age on employment is robust, and the inclusion of additional covariates did not substantially alter the observed relationship.
+Therefore, the findings indicate that age continues to be a significant predictor of employment status even when accounting for other relevant factors.
+
+(ii) Use the regression results to discuss the characteristics of workers who were hurt the most by the 2008 financial crisis.
+
+The workers with the following characteresitics were hurt the most by the 2008 financial crisis:
+
+1. **Age:**
+According to the regression results, individuals around the age of 43  (−β̂ age/(2∗β̂ age^2) are least impacted by the financial crisis. For those younger than 43, the impact increases with decreasing age, while for those older than 43, the impact rises with increasing age. Therefore, within this sample, individuals at the age of 18 experience the most substantial adverse effects. This observation highlights a non-linear relationship between age and the impact of the financial crisis.
+
+2. **Educational Attainment:**
+The employment of lower educated attainment (*educ_lths*) was negatively influenced (Estimate = -0.08385, p-value = 0.0018783). Whereas other educational levels (educ_hs, educ_somecol, educ_aa, educ_bac) do not show statistically significant effects.
+
+3. **Gender and Race:**
+The effects of gender (Female) and race are not statistically significant, with coefficients close to zero.
+
+4. **Marital Status:**
+Marital status (Married) does not have a significant impact on employment.
+
+5. **Regional Indicators:**
+The negative impact(-4.087e-02) of the western states (we_states) on employment remains significant(p-value=0.002653), indicating the employment opportunities were hurt in that region.
+
+6. **Weekly Earnings (earnwke):**
+The Financial crisis has a negative impact on the employment of lower Weekly earnings people(Estimate =3.481e-05, p-value = 0.0002804).
+
+In summary, workers around 43 face the least impact from the financial crisis, while those aged 18 experience the most adverse effects. Individuals with lower education, residing in western states, and lower earnings were were hurt the most by the 2008 financial crisis.
+
+```{r Question (g)}
+LPM_predictions_raw <- predict(binary_lpm, newdata = employ_data, type = "response")
+LPM_predictions<- ifelse(LPM_predictions_raw > 0.5, 1, 0)
+LPM_accuracy    <- sum(LPM_predictions == employ_data$employed) / nrow(employ_data)
+
+logit_predictions_raw <- predict(binary_logit, newdata = employ_data, type = "response")
+logit_predictions<- ifelse(logit_predictions_raw > 0.5, 1, 0)
+logit_accuracy  <- sum( logit_predictions== employ_data$employed) / nrow(employ_data)
+
+probit_predictions_raw <- predict(binary_probit, newdata = employ_data, type = "response")
+probit_predictions<- ifelse(probit_predictions_raw > 0.5, 1, 0)
+probit_accuracy <- sum( probit_predictions== employ_data$employed) / nrow(employ_data)
+```
+
+```{r }
+# select 100 minimum predicted employed probability
+min_indices <- order(prediction)[1:100] 
+employ_data[min_indices,]
+
+
+
+
+
+```
+
+
+
+```{r Question (h)}
+# Repeat point (g) using one or more (at your discretion) of the following classification algorithms: Naïve Bayes Classifier, Linear Discriminant Analysis, Quadratic Discriminant Analysis, Decision trees, Random forests, K-Nearest Neighbours.
+
+# Naive Bayes 
+# MARK
+nb_model <- naiveBayes(as.factor(employed) ~ age + age_sqaured, data = employ_data)
+nb_predictions <- predict(nb_model, newdata = employ_data, type = "class")
+nb_accuracy     <- sum(nb_predictions == employ_data$employed) / nrow(employ_data)
+
+
+# Linear Discriminant Analysis
+lda_model <- lda(as.factor(employed) ~ age + I(age^2), data = employ_data)
+  # LDA predictions
+lda_predictions <- predict(lda_model, newdata = employ_data)$class
+lda_accuracy    <- sum(lda_predictions == employ_data$employed) / nrow(employ_data)
+
+# Quadratic Discriminant Analysis
+qda_model <- qda(as.factor(employed) ~ age + I(age^2), data = employ_data)
+## QDA predictions
+qda_predictions <- predict(qda_model, newdata = employ_data)$class
+qda_accuracy    <- sum(qda_predictions == employ_data$employed) / nrow(employ_data)
+
+
+# Decision trees
+tree_model <- tree(as.factor(employed) ~ age + I(age^2), data = employ_data)
+tree_predictions <- predict(tree_model, newdata = employ_data, type = "class")
+tree_accuracy    <- sum(tree_predictions == employ_data$employed) / nrow(employ_data)
+
+# Random Forest
+set.seed(123)
+rf_model <- randomForest(as.factor(employed) ~ age + I(age^2), data= employ_data,num.trees= 100) 
+rf_predictions <- predict(rf_model, data = employ_data)
+rf_accuracy    <- sum(rf_predictions == employ_data$employed) / nrow(employ_data)
+
+
+# KNN
+employ_data <- employ_data %>%
+  mutate(age_squared = age^2)
+scaled_data <- scale(employ_data[, c("age", "age_squared")])
+# Define the number of neighbors
+k <- 7
+knn_predictions <- knn(train = scaled_data, test = scaled_data, cl = as.factor(employ_data$employed), 
+                       k = k)
+knn_accuracy    <- sum(knn_predictions == employ_data$employed) / nrow(employ_data)
+
+```
+
+
