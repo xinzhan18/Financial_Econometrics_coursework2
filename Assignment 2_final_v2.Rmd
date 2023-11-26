@@ -89,12 +89,10 @@ The fraction of workers in the sample is  0.8754619. The interpretation is that,
 # Question B
 Regress Employed on Age and Age**2 , using a linear probability model.
 
-```{r,comment=''}
+```{r}
 binary_lm <- lm(employed ~ age + I(age ^ 2), data = data)
 summary(binary_lm)
-coefest_df <- coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
-
-
+coeftest(binary_lm, vcov = vcovHC(binary_lm), type = "HC1")
 ```
 
 ## i)
@@ -260,8 +258,9 @@ Moreover, the observed decrease in the magnitude (ignoring sign) of the coeffici
 Use the regression results to discuss the characteristics of workers who were hurt the most by the 2008 financial crisis.
 \vspace{1em}
 
-From the regression results, I can conclude that those workers who are aged, black, having lower weekly earnings, not living in the central state and highest level of education is less than a high school graduate were hurt most by the 2008 financial crisis.
 
+From the regression, we find the coefficients for ‘earnwke,’ ‘ce_states,’ and ‘educ_lths’ and ‘as.factor(race)2,’ are all found to be statistically significant at the 0.1% level. The positive coefficients of ‘earnwke,’ ‘ce_states,’ indicate that individuals with lower weekly income and not living in the central state are more likely to lose their jobs during the crisis. Meanwhile, the negative coefficients of ‘educ_lths’ and ‘as.factor(race)2,’ and ‘I(age^2),’ imply that those whose highest education level is high school, black and aged suffer from higher unemployment risks during crisis period.
+Therefore, we can conclude that those workers who are aged, black, having lower weekly earnings, not living in the central state and highest level of education is less than a high school graduate were hurt most by the 2008 financial crisis.
 
 
 # Question G
@@ -283,18 +282,6 @@ normalize_cm <- function(cm, type='precision') {
   } else {
     stop("Type must be either 'precision' or 'recall'")
   }
-}
-
-# To get recall and precision from the matrix
-extract_values <- function(matrix_recall,matrix_precision) {
-  recall <- diag(matrix_recall)
-  precision <- diag(matrix_precision)
-  
-
-  recall[is.na(recall)] <- 0
-  precision[is.na(precision)] <- 0
-
-  return(cbind(recall, precision))
 }
 
 ```
@@ -350,6 +337,11 @@ False Positives (FP): 674 (the number of actual class 0 predicted as class 1). A
 False Negatives (FN): 0 (the number of actual class 1 predicted as class 0). The models did not incorrectly predict any instances that were actually class 1 as class 0.
 
 True Positives (TP): 4738 (the number of actual class 1 predicted as class 1). The models correctly predicted all instances that were actually class 1.
+```{r}
+normalize_cm(confusion_matrix_LPM)
+normalize_cm(confusion_matrix_LPM,'recall')
+```
+The precision of model is 87.54% This indicates that when the model predicts a candidate will be employed (predicts class 1), it is correct about 87.54% of the time. Recall is 100%, this means that all of the candidates who were actually employed (the true class 1s) were correctly identified by the model as being employed. 
 
 This performance of the models may indicate a significant issue with data imbalance, or a bias in feature recognition and learning within the models, leading them to recognize only one class.
 
@@ -410,7 +402,13 @@ scaled_data <- scale(data[, c("age", "age_squared")])
 k <- 7
 knn_predictions <- knn(train = scaled_data, test = scaled_data, 
                        cl = as.factor(data$employed), k = k)
+```
 
+
+## Calculate Algorithm Accuracies
+Next, we calculate the accuracy of each algorithm and put the results into a table for comparison.
+
+```{r}
 # Compute All Accuracies
 nb_accuracy <- sum(nb_predictions == data$employed) / nrow(data)
 lda_accuracy <- sum(lda_predictions == data$employed) / nrow(data)
@@ -420,9 +418,8 @@ rf_accuracy <- sum(rf_predictions == data$employed) / nrow(data)
 knn_accuracy <- sum(knn_predictions == data$employed) / nrow(data)
 ```
 
+All of models have the same accuracy, which is 87.55%. But the QDA model has a lower accuracry which is 86.10%.
 
-## Calculate Algorithm Accuracies
-Next, we calculate the accuracy of each algorithm and put the results into a table for comparison.
 ```{r,echo = FALSE}
 
 # Put all results into a table
@@ -475,10 +472,10 @@ We recognize this problem as the problem of the original data set, as analyzed i
 
 ## Improvment
 
-Since the dataset is unbalanced, so we can used over sample to create some new rows and put the into Random Forest model to train it
+Since the dataset is unbalanced, so we can used over sample to create some new data and use Random Forest model train this data.
 ```{r}
-clean_data <- na.omit(data)
 
+clean_data <- na.omit(data)
 
 clean_data <- clean_data %>% 
   mutate(employed=as.factor(employed)) %>% 
@@ -486,17 +483,18 @@ clean_data <- clean_data %>%
 
 clean_data <- subset(clean_data, select = -unemployed)
 
+# split data into train and test
 set.seed(122)  
 sample_size <- floor(0.70 * nrow(clean_data))  
 train_index <- sample(seq_len(nrow(clean_data)), size = sample_size)
 train_data <- clean_data[train_index, ]
 test_data <- clean_data[-train_index, ]
 
-
+# oversample data 
 balanced_data <- ovun.sample(employed~.,data = train_data, N=nrow(train_data), p=0.5, 
                                 seed=1, method="both")$data
 
-
+# train data using Random Forest
 rf_model <- randomForest(as.factor(employed) ~. , data= balanced_data, num.trees= 100) 
 
 rf_predictions <- predict(rf_model , balanced_data)
@@ -507,7 +505,7 @@ rf_accuracy <- sum(rf_predictions == balanced_data$employed)/ nrow(balanced_data
 rf_accuracy_test <- sum(rf_predictions_test == test_data$employed)/ nrow(test_data)
 
 
-
+# Confusion matrix
 confusion_matrix_rf <- table(Actual = factor(balanced_data$employed,levels=c(0,1)), 
                              Predicted = factor(rf_predictions,levels = c(0, 1)))
 
@@ -518,7 +516,6 @@ confusion_matrix_rf_test <- table(Actual = test_data$employed,
 ```
 
 ```{r,echo=FALSE}
-
 train_df <- as.data.frame(matrix(table(train_data$employed), nrow = 1))
 balanced_df <- as.data.frame(matrix(table(balanced_data$employed), nrow = 1))
 test_df <- as.data.frame(matrix(table(test_data$employed), nrow = 1))
@@ -548,7 +545,7 @@ comparison_table <- data.frame(
 kable(comparison_table, caption = "Accuracy for train and Test")
 
 ```
-From the table, it is evident that the accuracy on the training set is extremely high, reaching 99.16%. However, the accuracy on the test set is 78.56%, which is significantly lower than that of the training set and also lower than the initial model's 87.5%. To better evaluate the model's fitting, we will continue to examine the results of the confusion matrix.
+From the table, it is evident that the accuracy on the training set is extremely high, reaching 99.16%. However, the accuracy on the test set is 78.56%, which is significantly lower than that of the training set and also lower than the initial model's 87.55%. To better evaluate the model's fitting, we will continue to examine the results of the confusion matrix.
 
 ```{r}
 confusion_matrix_rf

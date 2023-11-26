@@ -236,32 +236,44 @@ Regress Employed on Age and Age**2 , using a linear probability model.
 \end{Shaded}
 
 \begin{verbatim}
-
-Call:
-lm(formula = employed ~ age + I(age^2), data = data)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--0.91925  0.08314  0.10020  0.13831  0.28944 
-
-Coefficients:
-              Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  3.075e-01  5.472e-02   5.619 2.02e-08 ***
-age          2.827e-02  2.747e-03  10.293  < 2e-16 ***
-I(age^2)    -3.266e-04  3.276e-05  -9.971  < 2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.327 on 5409 degrees of freedom
-Multiple R-squared:  0.01966,   Adjusted R-squared:  0.01929 
-F-statistic: 54.22 on 2 and 5409 DF,  p-value: < 2.2e-16
+## 
+## Call:
+## lm(formula = employed ~ age + I(age^2), data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.91925  0.08314  0.10020  0.13831  0.28944 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  3.075e-01  5.472e-02   5.619 2.02e-08 ***
+## age          2.827e-02  2.747e-03  10.293  < 2e-16 ***
+## I(age^2)    -3.266e-04  3.276e-05  -9.971  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.327 on 5409 degrees of freedom
+## Multiple R-squared:  0.01966,    Adjusted R-squared:  0.01929 
+## F-statistic: 54.22 on 2 and 5409 DF,  p-value: < 2.2e-16
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{coefest\_df }\OtherTok{\textless{}{-}} \FunctionTok{coeftest}\NormalTok{(binary\_lm, }\AttributeTok{vcov =} \FunctionTok{vcovHC}\NormalTok{(binary\_lm), }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+\FunctionTok{coeftest}\NormalTok{(binary\_lm, }\AttributeTok{vcov =} \FunctionTok{vcovHC}\NormalTok{(binary\_lm), }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## 
+## t test of coefficients:
+## 
+##                Estimate  Std. Error t value  Pr(>|t|)    
+## (Intercept)  3.0749e-01  6.6945e-02  4.5932 4.464e-06 ***
+## age          2.8272e-02  3.2852e-03  8.6060 < 2.2e-16 ***
+## I(age^2)    -3.2663e-04  3.8817e-05 -8.4146 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
 
 \hypertarget{i}{%
 \subsection{i)}\label{i}}
@@ -719,10 +731,19 @@ downward bias resulting from omitted variables.
 Use the regression results to discuss the characteristics of workers who
 were hurt the most by the 2008 financial crisis. \vspace{1em}
 
-From the regression results, I can conclude that those workers who are
-aged, black, having lower weekly earnings, not living in the central
-state and highest level of education is less than a high school graduate
-were hurt most by the 2008 financial crisis.
+From the regression, we find the coefficients for `earnwke,'
+`ce\_states,' and `educ\_lths' and `as.factor(race)2,' are all found to
+be statistically significant at the 0.1\% level. The positive
+coefficients of `earnwke,' `ce\_states,' indicate that individuals with
+lower weekly income and not living in the central state are more likely
+to lose their jobs during the crisis. Meanwhile, the negative
+coefficients of `educ\_lths' and `as.factor(race)2,' and `I(age\^{}2),'
+imply that those whose highest education level is high school, black and
+aged suffer from higher unemployment risks during crisis period.
+Therefore, we can conclude that those workers who are aged, black,
+having lower weekly earnings, not living in the central state and
+highest level of education is less than a high school graduate were hurt
+most by the 2008 financial~crisis.
 
 \hypertarget{question-g}{%
 \section{Question G}\label{question-g}}
@@ -747,18 +768,6 @@ classification. What is the proportion of correctly assigned classes?
 \NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
     \FunctionTok{stop}\NormalTok{(}\StringTok{"Type must be either \textquotesingle{}precision\textquotesingle{} or \textquotesingle{}recall\textquotesingle{}"}\NormalTok{)}
 \NormalTok{  \}}
-\NormalTok{\}}
-
-\CommentTok{\# To get recall and precision from the matrix}
-\NormalTok{extract\_values }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(matrix\_recall,matrix\_precision) \{}
-\NormalTok{  recall }\OtherTok{\textless{}{-}} \FunctionTok{diag}\NormalTok{(matrix\_recall)}
-\NormalTok{  precision }\OtherTok{\textless{}{-}} \FunctionTok{diag}\NormalTok{(matrix\_precision)}
-  
-
-\NormalTok{  recall[}\FunctionTok{is.na}\NormalTok{(recall)] }\OtherTok{\textless{}{-}} \DecValTok{0}
-\NormalTok{  precision[}\FunctionTok{is.na}\NormalTok{(precision)] }\OtherTok{\textless{}{-}} \DecValTok{0}
-
-  \FunctionTok{return}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(recall, precision))}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
@@ -843,6 +852,38 @@ actually class 1 as class 0.
 True Positives (TP): 4738 (the number of actual class 1 predicted as
 class 1). The models correctly predicted all instances that were
 actually class 1.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{normalize\_cm}\NormalTok{(confusion\_matrix\_LPM)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual         0         1
+##      0 0.0000000 0.1245381
+##      1 0.0000000 0.8754619
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{normalize\_cm}\NormalTok{(confusion\_matrix\_LPM,}\StringTok{\textquotesingle{}recall\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Predicted
+## Actual 0 1
+##      0 0 1
+##      1 0 1
+\end{verbatim}
+
+The precision of model is 87.54\% This indicates that when the model
+predicts a candidate will be employed (predicts class 1), it is correct
+about 87.54\% of the time. Recall is 100\%, this means that all of the
+candidates who were actually employed (the true class 1s) were correctly
+identified by the model as being employed.
 
 This performance of the models may indicate a significant issue with
 data imbalance, or a bias in feature recognition and learning within the
@@ -936,7 +977,18 @@ Analysis}\label{quadratic-discriminant-analysis}}
 \NormalTok{k }\OtherTok{\textless{}{-}} \DecValTok{7}
 \NormalTok{knn\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{knn}\NormalTok{(}\AttributeTok{train =}\NormalTok{ scaled\_data, }\AttributeTok{test =}\NormalTok{ scaled\_data, }
                        \AttributeTok{cl =} \FunctionTok{as.factor}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{employed), }\AttributeTok{k =}\NormalTok{ k)}
+\end{Highlighting}
+\end{Shaded}
 
+\hypertarget{calculate-algorithm-accuracies}{%
+\subsection{Calculate Algorithm
+Accuracies}\label{calculate-algorithm-accuracies}}
+
+Next, we calculate the accuracy of each algorithm and put the results
+into a table for comparison.
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \CommentTok{\# Compute All Accuracies}
 \NormalTok{nb\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(nb\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
 \NormalTok{lda\_accuracy }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(lda\_predictions }\SpecialCharTok{==}\NormalTok{ data}\SpecialCharTok{$}\NormalTok{employed) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(data)}
@@ -947,12 +999,8 @@ Analysis}\label{quadratic-discriminant-analysis}}
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{calculate-algorithm-accuracies}{%
-\subsection{Calculate Algorithm
-Accuracies}\label{calculate-algorithm-accuracies}}
-
-Next, we calculate the accuracy of each algorithm and put the results
-into a table for comparison.
+All of models have the same accuracy, which is 87.55\%. But the QDA
+model has a lower accuracry which is 86.10\%.
 
 \begin{longtable}[]{@{}lr@{}}
 \caption{Accuracy for All Models}\tabularnewline
@@ -1056,12 +1104,11 @@ removing samples from class 1.
 \subsection{Improvment}\label{improvment}}
 
 Since the dataset is unbalanced, so we can used over sample to create
-some new rows and put the into Random Forest model to train it
+some new data and use Random Forest model train this data.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{clean\_data }\OtherTok{\textless{}{-}} \FunctionTok{na.omit}\NormalTok{(data)}
-
 
 \NormalTok{clean\_data }\OtherTok{\textless{}{-}}\NormalTok{ clean\_data }\SpecialCharTok{\%\textgreater{}\%} 
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{employed=}\FunctionTok{as.factor}\NormalTok{(employed)) }\SpecialCharTok{\%\textgreater{}\%} 
@@ -1069,17 +1116,18 @@ some new rows and put the into Random Forest model to train it
 
 \NormalTok{clean\_data }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(clean\_data, }\AttributeTok{select =} \SpecialCharTok{{-}}\NormalTok{unemployed)}
 
+\CommentTok{\# split data into train and test}
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{122}\NormalTok{)  }
 \NormalTok{sample\_size }\OtherTok{\textless{}{-}} \FunctionTok{floor}\NormalTok{(}\FloatTok{0.70} \SpecialCharTok{*} \FunctionTok{nrow}\NormalTok{(clean\_data))  }
 \NormalTok{train\_index }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(clean\_data)), }\AttributeTok{size =}\NormalTok{ sample\_size)}
 \NormalTok{train\_data }\OtherTok{\textless{}{-}}\NormalTok{ clean\_data[train\_index, ]}
 \NormalTok{test\_data }\OtherTok{\textless{}{-}}\NormalTok{ clean\_data[}\SpecialCharTok{{-}}\NormalTok{train\_index, ]}
 
-
+\CommentTok{\# oversample data }
 \NormalTok{balanced\_data }\OtherTok{\textless{}{-}} \FunctionTok{ovun.sample}\NormalTok{(employed}\SpecialCharTok{\textasciitilde{}}\NormalTok{.,}\AttributeTok{data =}\NormalTok{ train\_data, }\AttributeTok{N=}\FunctionTok{nrow}\NormalTok{(train\_data), }\AttributeTok{p=}\FloatTok{0.5}\NormalTok{, }
                                 \AttributeTok{seed=}\DecValTok{1}\NormalTok{, }\AttributeTok{method=}\StringTok{"both"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{data}
 
-
+\CommentTok{\# train data using Random Forest}
 \NormalTok{rf\_model }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(}\FunctionTok{as.factor}\NormalTok{(employed) }\SpecialCharTok{\textasciitilde{}}\NormalTok{. , }\AttributeTok{data=}\NormalTok{ balanced\_data, }\AttributeTok{num.trees=} \DecValTok{100}\NormalTok{) }
 
 \NormalTok{rf\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_model , balanced\_data)}
@@ -1090,7 +1138,7 @@ some new rows and put the into Random Forest model to train it
 \NormalTok{rf\_accuracy\_test }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(rf\_predictions\_test }\SpecialCharTok{==}\NormalTok{ test\_data}\SpecialCharTok{$}\NormalTok{employed)}\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(test\_data)}
 
 
-
+\CommentTok{\# Confusion matrix}
 \NormalTok{confusion\_matrix\_rf }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{Actual =} \FunctionTok{factor}\NormalTok{(balanced\_data}\SpecialCharTok{$}\NormalTok{employed,}\AttributeTok{levels=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{)), }
                              \AttributeTok{Predicted =} \FunctionTok{factor}\NormalTok{(rf\_predictions,}\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)))}
 
@@ -1145,7 +1193,7 @@ Test Set accuracy & 0.7856145 \\
 From the table, it is evident that the accuracy on the training set is
 extremely high, reaching 99.16\%. However, the accuracy on the test set
 is 78.56\%, which is significantly lower than that of the training set
-and also lower than the initial model's 87.5\%. To better evaluate the
+and also lower than the initial model's 87.55\%. To better evaluate the
 model's fitting, we will continue to examine the results of the
 confusion matrix.
 
